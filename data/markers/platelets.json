@@ -1,0 +1,16 @@
+{
+  "marker": "Platelets",
+  "whatIsIt": "Platelets are small blood cell fragments that help your blood clot and stop bleeding when you're injured. They clump together at the site of a wound to form a plug, then work with clotting factors to create a stable clot. Low platelet counts (thrombocytopenia) can cause excessive bleeding or bruising, while high counts (thrombocytosis) may increase the risk of blood clots.",
+  "whyMeasured": [
+    "Evaluate unexplained bleeding or bruising",
+    "Assess risk of excessive bleeding before surgery",
+    "Monitor conditions affecting platelet production",
+    "Detect bone marrow disorders or blood clotting problems"
+  ],
+  "researchContext": "Platelet counts can be affected by medications (including aspirin and certain antibiotics), autoimmune conditions, viral infections, bone marrow disorders, alcohol consumption, and pregnancy. Research shows that some genetic variations influence baseline platelet counts across different populations. Studies have examined how lifestyle factors affect platelet function - populations with diets rich in omega-3 fatty acids (found in fatty fish like salmon) show different platelet aggregation patterns than those with diets high in saturated fats. Alcohol consumption has been associated with decreased platelet counts in population studies. However, many medical conditions including immune thrombocytopenia (ITP), leukemia, and liver disease can affect platelet counts, and individual results must be interpreted by healthcare providers in the context of your symptoms, medications, and complete blood count.",
+  "sources": [
+    "https://medlineplus.gov/lab-tests/platelet-count/",
+    "https://www.mayoclinic.org/tests-procedures/complete-blood-count/about/pac-20384919",
+    "https://www.nhlbi.nih.gov/health/thrombocytopenia"
+  ]
+}

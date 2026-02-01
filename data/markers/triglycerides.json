@@ -1,0 +1,16 @@
+{
+  "marker": "Triglycerides",
+  "whatIsIt": "Triglycerides are the most common type of fat in your body. They come from foods you eat and are also made by your body. When you eat, your body converts calories it doesn't need to use right away into triglycerides, which are stored in fat cells. High triglyceride levels can contribute to hardening of the arteries and increase your risk of heart disease and stroke.",
+  "whyMeasured": [
+    "Assess cardiovascular disease risk",
+    "Evaluate for metabolic syndrome",
+    "Monitor effectiveness of lifestyle modifications or medications",
+    "Screen for conditions that can cause high triglycerides, such as diabetes or thyroid problems"
+  ],
+  "researchContext": "Triglyceride levels are influenced by diet, physical activity, alcohol consumption, body weight, blood sugar control, and certain medications. Research shows that populations consuming diets high in refined carbohydrates, added sugars, and excess calories tend to have elevated triglyceride levels. Studies have examined how dietary patterns emphasizing whole grains, vegetables, legumes, and omega-3 fatty acids (found in fatty fish) correlate with lower triglyceride levels in large populations. Weight loss and regular physical activity have also been associated with triglyceride reduction. Individual responses vary, and appropriate interventions should be determined by your healthcare provider.",
+  "sources": [
+    "https://medlineplus.gov/triglycerides.html",
+    "https://www.mayoclinic.org/diseases-conditions/high-blood-cholesterol/in-depth/triglycerides/art-20048186",
+    "https://www.heart.org/en/health-topics/cholesterol/about-cholesterol/what-your-cholesterol-levels-mean"
+  ]
+}

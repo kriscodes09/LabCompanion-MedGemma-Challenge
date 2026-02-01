@@ -1,0 +1,16 @@
+{
+  "marker": "HDL Cholesterol",
+  "whatIsIt": "HDL (High-Density Lipoprotein) cholesterol is often called 'good' cholesterol because it helps remove other forms of cholesterol from your bloodstream. Higher levels of HDL cholesterol are associated with lower risk of heart disease and stroke.",
+  "whyMeasured": [
+    "Assess cardiovascular disease risk",
+    "Evaluate the balance between 'good' and 'bad' cholesterol",
+    "Monitor effectiveness of lifestyle changes or medications",
+    "Help determine if additional heart disease screening is needed"
+  ],
+  "researchContext": "HDL cholesterol levels are influenced by genetics, physical activity, body weight, smoking status, and alcohol consumption. Research shows that populations with diets high in omega-3 fatty acids (found in fatty fish like salmon and sardines) and monounsaturated fats (found in olive oil, avocados, and nuts) tend to have higher HDL cholesterol levels. Regular aerobic exercise and maintaining a healthy weight have also been associated with increased HDL in population studies. However, individual responses vary significantly, and any lifestyle changes should be discussed with your healthcare provider.",
+  "sources": [
+    "https://medlineplus.gov/hdlthegoodcholesterol.html",
+    "https://www.mayoclinic.org/diseases-conditions/high-blood-cholesterol/in-depth/hdl-cholesterol/art-20046388",
+    "https://www.heart.org/en/health-topics/cholesterol/hdl-good-ldl-bad-cholesterol-and-triglycerides"
+  ]
+}

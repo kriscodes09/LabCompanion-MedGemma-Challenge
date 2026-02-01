@@ -1,0 +1,16 @@
+{
+  "marker": "MCV (Mean Corpuscular Volume)",
+  "whatIsIt": "MCV measures the average size of your red blood cells. It's reported in femtoliters (fL), which are extremely tiny units of volume. Low MCV (microcytic) means your red blood cells are smaller than normal, often seen in iron deficiency. High MCV (macrocytic) means your red blood cells are larger than normal, which can indicate vitamin B12 or folate deficiency. MCV helps doctors determine the cause of anemia.",
+  "whyMeasured": [
+    "Classify the type of anemia (microcytic, normocytic, or macrocytic)",
+    "Identify potential nutritional deficiencies (iron, B12, folate)",
+    "Evaluate alcohol use effects on blood cells",
+    "Guide further testing and treatment for anemia"
+  ],
+  "researchContext": "MCV can be affected by iron status, vitamin B12 and folate levels, alcohol consumption, thyroid function, and certain medications. Research shows that populations with iron deficiency typically have low MCV (microcytic anemia), while those with vitamin B12 or folate deficiency show high MCV (macrocytic anemia). Studies have examined how dietary patterns influence MCV - populations with adequate iron intake (from lean meats, legumes, fortified grains), vitamin B12 (from animal products), and folate (from leafy greens, legumes, fortified grains) tend to maintain normal MCV values. Chronic alcohol consumption is consistently associated with elevated MCV in population studies, even without anemia. Vegetarians and vegans may show different patterns and should ensure adequate B12 supplementation. However, many conditions including thalassemia, chronic disease, and bone marrow disorders can affect MCV, and individual results must be interpreted by healthcare providers in conjunction with other blood count parameters.",
+  "sources": [
+    "https://medlineplus.gov/lab-tests/mcv-mean-corpuscular-volume/",
+    "https://www.mayoclinic.org/tests-procedures/complete-blood-count/about/pac-20384919",
+    "https://www.nhlbi.nih.gov/health/anemia"
+  ]
+}

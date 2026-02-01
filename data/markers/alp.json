@@ -1,0 +1,16 @@
+{
+  "marker": "ALP (Alkaline Phosphatase)",
+  "whatIsIt": "Alkaline phosphatase is an enzyme found in several tissues throughout the body, with the highest concentrations in the liver, bones, and bile ducts. ALP plays a role in breaking down proteins and is particularly involved in bone formation and liver function. Elevated levels can indicate liver disease, bone disorders, or bile duct obstruction.",
+  "whyMeasured": [
+    "Evaluate liver function and detect bile duct problems",
+    "Assess bone disorders or abnormal bone growth",
+    "Monitor treatment for liver or bone conditions",
+    "Investigate unexplained symptoms like bone pain or jaundice"
+  ],
+  "researchContext": "ALP levels can be influenced by age (higher in children due to bone growth and in older adults), pregnancy, blood type, liver disease, bone disorders, and certain medications. Research shows that populations with vitamin D deficiency often show different ALP patterns, as vitamin D is crucial for bone health and calcium metabolism. Studies have examined how dietary patterns affect bone health and liver function - populations with adequate calcium intake, vitamin D levels, and protein consumption tend to show different ALP patterns than those with nutritional deficiencies. However, ALP elevation can be caused by many conditions including Paget's disease, osteomalacia, and biliary obstruction, and individual results must be interpreted by healthcare providers in the context of your symptoms and other test results.",
+  "sources": [
+    "https://medlineplus.gov/lab-tests/alkaline-phosphatase/",
+    "https://www.mayoclinic.org/tests-procedures/liver-function-tests/about/pac-20394595",
+    "https://www.bones.nih.gov/health-info/bone/bone-health/bone-mass-measure"
+  ]
+}

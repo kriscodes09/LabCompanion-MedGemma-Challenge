@@ -1,0 +1,16 @@
+{
+  "marker": "WBC (White Blood Cells)",
+  "whatIsIt": "White blood cells are part of your immune system and help your body fight infections and other diseases. There are several types of white blood cells, each with different functions. A WBC count measures the total number of white blood cells in your blood. Low counts may indicate a weakened immune system, while high counts often signal infection, inflammation, or other conditions.",
+  "whyMeasured": [
+    "Detect infections or inflammation in the body",
+    "Evaluate immune system function",
+    "Monitor conditions affecting white blood cell production",
+    "Assess response to treatments like chemotherapy or immunosuppressants"
+  ],
+  "researchContext": "WBC counts can be influenced by infections, autoimmune disorders, bone marrow conditions, medications, stress, and smoking. Research shows that populations with chronic stress tend to have different WBC patterns than those without. Studies have examined how lifestyle factors affect immune function - populations with adequate sleep, regular physical activity, and diets rich in vegetables, fruits, and whole grains tend to show different immune markers than those with poor sleep, sedentary lifestyles, or diets high in processed foods. Smoking has been consistently associated with elevated WBC counts in large population studies. However, many medical conditions including leukemia, lupus, and HIV can affect WBC counts, and individual results must be interpreted by healthcare providers in the context of your symptoms and complete blood count analysis.",
+  "sources": [
+    "https://medlineplus.gov/lab-tests/white-blood-count-wbc/",
+    "https://www.mayoclinic.org/tests-procedures/complete-blood-count/about/pac-20384919",
+    "https://www.nhlbi.nih.gov/health/blood-tests/complete-blood-count"
+  ]
+}

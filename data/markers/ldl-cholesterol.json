@@ -1,0 +1,16 @@
+{
+  "marker": "LDL Cholesterol",
+  "whatIsIt": "LDL (Low-Density Lipoprotein) cholesterol is often called 'bad' cholesterol because high levels can lead to plaque buildup in your arteries, increasing the risk of heart disease and stroke. LDL carries cholesterol to cells throughout your body, but excess amounts can accumulate in artery walls.",
+  "whyMeasured": [
+    "Assess risk for heart disease and stroke",
+    "Determine if cholesterol-lowering treatment is needed",
+    "Monitor effectiveness of medications or lifestyle changes",
+    "Guide decisions about cardiovascular disease prevention strategies"
+  ],
+  "researchContext": "LDL cholesterol levels are influenced by genetics, diet, physical activity, body weight, and certain medical conditions. Studies have examined how dietary patterns affect LDL levels - populations consuming diets high in saturated fats and trans fats tend to have higher LDL levels, while those following dietary patterns rich in fiber (from whole grains, legumes, and vegetables), unsaturated fats, and plant sterols show different LDL patterns. However, genetic factors play a significant role, and individual results must be interpreted by healthcare providers in the context of your overall health profile and family history.",
+  "sources": [
+    "https://medlineplus.gov/ldlthebadcholesterol.html",
+    "https://www.mayoclinic.org/diseases-conditions/high-blood-cholesterol/in-depth/cholesterol-levels/art-20048245",
+    "https://www.heart.org/en/health-topics/cholesterol/about-cholesterol"
+  ]
+}

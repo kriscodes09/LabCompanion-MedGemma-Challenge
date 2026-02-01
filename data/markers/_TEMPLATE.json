@@ -1,0 +1,15 @@
+{
+  "marker": "Total Cholesterol",
+  "whatIsIt": "Cholesterol is a waxy, fat-like substance found in all cells of your body. Your body needs some cholesterol to make hormones, vitamin D, and substances that help you digest foods. Total cholesterol measures all the cholesterol in your blood.",
+  "whyMeasured": [
+    "Screen for heart disease and stroke risk",
+    "Monitor effectiveness of cholesterol-lowering treatments",
+    "Assess overall cardiovascular health",
+    "Guide decisions about lifestyle changes or medications"
+  ],
+  "researchContext": "Cholesterol levels can be influenced by diet, exercise, genetics, age, medications, and underlying health conditions. Research examines population-level patterns and risk factors, but individual results must be interpreted by healthcare providers in the context of your complete health picture.",
+  "sources": [
+    "https://medlineplus.gov/cholesterol.html",
+    "https://www.mayoclinic.org/tests-procedures/cholesterol-test/"
+  ]
+}

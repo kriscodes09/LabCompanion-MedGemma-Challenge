@@ -1,0 +1,16 @@
+{
+  "marker": "ALT (Alanine Aminotransferase)",
+  "whatIsIt": "ALT is an enzyme found primarily in the liver. When liver cells are damaged, ALT is released into the bloodstream, making it a key indicator of liver health. Elevated ALT levels can signal liver inflammation or damage, though the enzyme is also found in smaller amounts in the kidneys, heart, and muscles.",
+  "whyMeasured": [
+    "Screen for liver disease or damage",
+    "Monitor progression of liver conditions like hepatitis or fatty liver disease",
+    "Assess medication side effects on the liver",
+    "Evaluate symptoms like jaundice, fatigue, or abdominal pain"
+  ],
+  "researchContext": "ALT levels can be influenced by alcohol consumption, medications (including some over-the-counter pain relievers), obesity, and metabolic conditions. Research on large populations shows that elevated ALT is associated with non-alcoholic fatty liver disease (NAFLD), which correlates with dietary patterns high in refined carbohydrates, added sugars, and saturated fats. Studies have examined how populations following dietary patterns emphasizing whole foods, vegetables, lean proteins, and healthy fats tend to have lower rates of elevated liver enzymes. However, many factors including genetics, viral infections, and underlying conditions can affect ALT levels, and individual results must be interpreted by healthcare providers in the context of your complete health picture.",
+  "sources": [
+    "https://medlineplus.gov/lab-tests/alt-blood-test/",
+    "https://www.mayoclinic.org/tests-procedures/liver-function-tests/about/pac-20394595",
+    "https://www.niddk.nih.gov/health-information/liver-disease"
+  ]
+}

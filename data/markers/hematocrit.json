@@ -1,0 +1,16 @@
+{
+  "marker": "Hematocrit",
+  "whatIsIt": "Hematocrit measures the percentage of your blood that is made up of red blood cells. If your hematocrit is 45%, that means 45% of your blood volume consists of red blood cells. Low hematocrit indicates anemia (not enough red blood cells), while high hematocrit can indicate polycythemia, dehydration, or lung disease. Hematocrit is closely related to hemoglobin and red blood cell count.",
+  "whyMeasured": [
+    "Diagnose and monitor anemia or polycythemia",
+    "Evaluate dehydration status",
+    "Assess oxygen-carrying capacity of blood",
+    "Monitor chronic conditions affecting blood production"
+  ],
+  "researchContext": "Hematocrit levels can be influenced by hydration status, altitude (higher at high elevations), smoking, lung disease, sleep apnea, and testosterone levels. Research on populations living at high altitudes shows naturally elevated hematocrit levels as an adaptation to lower oxygen availability. Studies have examined how nutritional factors affect hematocrit - populations with adequate iron intake (from lean meats, legumes, fortified grains), vitamin B12, and folate tend to maintain healthy hematocrit levels, while those with nutritional deficiencies show different patterns. Chronic dehydration, which can occur in populations with inadequate fluid intake or excessive caffeine/alcohol consumption, can artificially elevate hematocrit. However, many medical conditions including kidney disease, bone marrow disorders, and chronic diseases can affect hematocrit, and individual results must be interpreted by healthcare providers considering your complete blood count and symptoms.",
+  "sources": [
+    "https://medlineplus.gov/lab-tests/hematocrit-test/",
+    "https://www.mayoclinic.org/tests-procedures/complete-blood-count/about/pac-20384919",
+    "https://www.nhlbi.nih.gov/health/anemia"
+  ]
+}

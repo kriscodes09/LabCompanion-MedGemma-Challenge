@@ -1,0 +1,16 @@
+{
+  "marker": "GGT (Gamma-Glutamyl Transferase)",
+  "whatIsIt": "GGT is an enzyme found mainly in the liver and bile ducts, though it's also present in the kidneys, pancreas, and intestines. It helps the liver metabolize drugs and other substances. GGT is particularly sensitive to bile duct problems and is often used to determine whether elevated ALP is coming from the liver or bones, since GGT is not elevated in bone disorders.",
+  "whyMeasured": [
+    "Evaluate liver function and detect bile duct obstruction",
+    "Distinguish liver disease from bone disorders when ALP is elevated",
+    "Monitor alcohol use and its effects on the liver",
+    "Assess chronic liver disease progression"
+  ],
+  "researchContext": "GGT levels are influenced by alcohol consumption (even moderate amounts), medications, obesity, diabetes, and liver disease. Research shows GGT is one of the most sensitive markers for detecting alcohol-related liver damage. Population studies have found associations between elevated GGT and metabolic syndrome, with research examining how dietary patterns high in processed foods, refined carbohydrates, and saturated fats correlate with higher GGT levels. Studies show that populations with regular alcohol consumption, even within recommended limits, tend to have higher GGT levels than non-drinkers. However, many conditions including bile duct obstruction, pancreatitis, and certain medications can elevate GGT, and individual results must be interpreted by healthcare providers in the context of your complete health assessment.",
+  "sources": [
+    "https://medlineplus.gov/lab-tests/ggt-blood-test/",
+    "https://www.mayoclinic.org/tests-procedures/liver-function-tests/about/pac-20394595",
+    "https://www.niddk.nih.gov/health-information/liver-disease"
+  ]
+}

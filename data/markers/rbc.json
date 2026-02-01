@@ -1,0 +1,16 @@
+{
+  "marker": "RBC (Red Blood Cells)",
+  "whatIsIt": "Red blood cells carry oxygen from your lungs to the rest of your body and return carbon dioxide to your lungs to be exhaled. The RBC count measures how many red blood cells you have per volume of blood. Low counts indicate anemia (not enough oxygen-carrying capacity), while high counts can indicate polycythemia or dehydration. RBCs contain hemoglobin, the protein that actually carries the oxygen.",
+  "whyMeasured": [
+    "Diagnose anemia or polycythemia",
+    "Evaluate symptoms like fatigue, weakness, or shortness of breath",
+    "Monitor chronic conditions affecting red blood cell production",
+    "Assess response to treatments for blood disorders"
+  ],
+  "researchContext": "RBC counts can be influenced by altitude (higher counts at high elevations), hydration status, smoking, lung disease, kidney disease, and nutritional status. Research on large populations shows that adequate iron, vitamin B12, folate, and protein intake are associated with healthy red blood cell production. Studies have examined how dietary patterns affect RBC parameters - populations with diets rich in iron sources (lean meats, legumes, fortified grains), vitamin B12 (animal products), and folate (leafy greens, legumes) tend to have different RBC patterns than those with nutritional deficiencies. Vegetarians and vegans may show different patterns and may need to pay special attention to B12 supplementation. However, many conditions including chronic diseases, bone marrow disorders, and genetic conditions can affect RBC counts, and individual results must be interpreted by healthcare providers considering your complete blood count and clinical picture.",
+  "sources": [
+    "https://medlineplus.gov/lab-tests/red-blood-cell-rbc-count/",
+    "https://www.mayoclinic.org/tests-procedures/complete-blood-count/about/pac-20384919",
+    "https://www.nhlbi.nih.gov/health/anemia"
+  ]
+}

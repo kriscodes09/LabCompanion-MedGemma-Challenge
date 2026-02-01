@@ -1,0 +1,16 @@
+{
+  "marker": "AST (Aspartate Aminotransferase)",
+  "whatIsIt": "AST is an enzyme found in the liver, heart, muscles, and other tissues. Like ALT, AST is released into the bloodstream when cells are damaged. While elevated AST can indicate liver problems, it's less specific to the liver than ALT because it's found in multiple organs. The ratio of AST to ALT can help doctors identify the source of the problem.",
+  "whyMeasured": [
+    "Evaluate liver function and detect liver damage",
+    "Distinguish between different types of liver disease",
+    "Monitor chronic liver conditions",
+    "Assess for heart or muscle damage in combination with other tests"
+  ],
+  "researchContext": "AST levels can be affected by liver disease, heart conditions, muscle disorders, alcohol use, and certain medications. Population studies show that the AST/ALT ratio is often used to help distinguish alcoholic liver disease from non-alcoholic fatty liver disease. Research has examined how lifestyle factors including physical activity levels, alcohol consumption, and dietary patterns influence liver enzyme levels. Studies of populations with diets rich in processed foods and added sugars show associations with elevated liver enzymes, while populations consuming diets emphasizing vegetables, whole grains, and lean proteins tend to show different patterns. Individual AST levels must be interpreted by healthcare providers considering your complete medical history and other test results.",
+  "sources": [
+    "https://medlineplus.gov/lab-tests/ast-test/",
+    "https://www.mayoclinic.org/tests-procedures/liver-function-tests/about/pac-20394595",
+    "https://www.niddk.nih.gov/health-information/liver-disease/nafld-nash"
+  ]
+}

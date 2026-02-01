@@ -1,0 +1,16 @@
+{
+  "marker": "Bilirubin (Total)",
+  "whatIsIt": "Bilirubin is a yellowish substance produced when the body breaks down old red blood cells. The liver processes bilirubin and releases it into bile, which helps digest fats. Total bilirubin measures both direct (conjugated) and indirect (unconjugated) bilirubin in the blood. High levels cause jaundice (yellowing of the skin and eyes) and can indicate liver disease, bile duct problems, or increased red blood cell breakdown.",
+  "whyMeasured": [
+    "Evaluate liver function and diagnose liver disease",
+    "Investigate jaundice or yellowing of the skin and eyes",
+    "Assess bile duct function and detect blockages",
+    "Monitor conditions affecting red blood cell breakdown"
+  ],
+  "researchContext": "Bilirubin levels can be affected by liver disease, bile duct obstruction, hemolytic anemia (excessive red blood cell breakdown), Gilbert's syndrome (a common genetic condition), and certain medications. In newborns, elevated bilirubin is common due to immature liver function. Research shows that some populations have genetic variations that affect bilirubin metabolism, with Gilbert's syndrome affecting approximately 3-10% of the population. Studies have examined how fasting, dehydration, and certain dietary patterns can temporarily affect bilirubin levels. However, persistent elevation usually indicates a medical condition requiring evaluation, and individual results must be interpreted by healthcare providers considering your symptoms, other liver function tests, and complete medical history.",
+  "sources": [
+    "https://medlineplus.gov/lab-tests/bilirubin-blood-test/",
+    "https://www.mayoclinic.org/tests-procedures/liver-function-tests/about/pac-20394595",
+    "https://www.niddk.nih.gov/health-information/liver-disease"
+  ]
+}

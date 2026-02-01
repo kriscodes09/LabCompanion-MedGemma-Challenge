@@ -1,0 +1,16 @@
+{
+  "marker": "Hemoglobin",
+  "whatIsIt": "Hemoglobin is a protein in red blood cells that carries oxygen from your lungs to the rest of your body and returns carbon dioxide back to your lungs to be exhaled. The hemoglobin test measures how much of this oxygen-carrying protein is in your blood. Low levels may indicate anemia, while high levels can suggest other conditions.",
+  "whyMeasured": [
+    "Screen for anemia or other blood disorders",
+    "Monitor chronic conditions like kidney disease or diabetes",
+    "Evaluate symptoms like fatigue, weakness, or shortness of breath",
+    "Assess response to treatments for anemia or blood disorders"
+  ],
+  "researchContext": "Hemoglobin levels are influenced by genetics, iron intake, vitamin B12 and folate status, chronic diseases, blood loss, altitude, and hydration status. Research on large populations shows that dietary patterns play a role in maintaining healthy hemoglobin levels - populations with adequate intake of iron (found in lean meats, legumes, and fortified grains), vitamin B12 (found in animal products), folate (found in leafy greens and fortified grains), and vitamin C (which enhances iron absorption) tend to have different hemoglobin patterns than those with nutritional deficiencies. However, many medical conditions can affect hemoglobin levels, and the underlying cause must be identified by your healthcare provider for proper treatment.",
+  "sources": [
+    "https://medlineplus.gov/lab-tests/hemoglobin-test/",
+    "https://www.mayoclinic.org/tests-procedures/hemoglobin-test/about/pac-20385075",
+    "https://www.nhlbi.nih.gov/health/anemia"
+  ]
+}
