@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MarkerContext } from '@/lib/types';
-import { downloadTextFile } from '@/lib/export/simple-export';
+import { generateSimpleExport } from '@/lib/export/simple-export';
 
 export default function MarkerPage() {
   const router = useRouter();

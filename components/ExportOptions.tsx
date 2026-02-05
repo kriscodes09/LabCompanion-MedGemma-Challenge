@@ -3,12 +3,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { downloadTextFile } from '@/lib/export/simple-export';
 import { LabValue } from '@/lib/types';
-import { 
-  generateQuestionsExport, 
-  generateLearningSummaryExport,
-  downloadTextFile 
-} from '@/lib/export/simple-export';
 
 interface ExportOptionsProps {
   results: LabValue[];
