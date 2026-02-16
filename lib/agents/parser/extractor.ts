@@ -160,10 +160,12 @@ function coerceReferenceRange(raw: unknown, fallbackUnit: string): LabMarker['re
   const high = typeof raw.high === 'number' ? raw.high : safeNumber(raw.high);
   const unit = typeof raw.unit === 'string' ? normalizeUnit(raw.unit) : fallbackUnit;
 
-  if (typeof low !== 'number' || typeof high !== 'number') return undefined;
+  // ✅ allow partial ranges (low-only OR high-only)
+  if (typeof low !== 'number' && typeof high !== 'number') return undefined;
 
   return { low, high, unit };
 }
+
 
 /**
  * Very lightweight plaintext extraction.

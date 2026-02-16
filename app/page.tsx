@@ -1,201 +1,248 @@
 'use client';
 
 import { useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
-import { LabValue } from '@/lib/types';
+import { Button } from '@/components/ui/button';
+import { extractTextFromImage, extractTextFromMultipleImages } from '@/lib/agents/parser/tesseract-ocr';
 
-export default function Home() {
-  const [image, setImage] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string>('');
-  const [extracting, setExtracting] = useState(false);
-  const [results, setResults] = useState<LabValue[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+// ✅ NEW: call the orchestrator
+import { processLabText } from '@/lib/agents/orchestrator/workflow';
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: {
-      'image/*': ['.png', '.jpg', '.jpeg'],
-    },
-    maxFiles: 1,
-    onDrop: (acceptedFiles) => {
-      const file = acceptedFiles[0];
-      if (file) {
-        setFileName(file.name);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setImage(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-      }
+function clamp(n: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, n));
+}
+
+/**
+ * Tesseract progress sometimes arrives as:
+ *  - 0..1  (fraction)
+ *  - 0..100 (percent)
+ * Normalize to 0..1 safely.
+ */
+function normalizeToUnit(p: number) {
+  if (!Number.isFinite(p)) return 0;
+  const unit = p <= 1 ? p : p / 100;
+  return clamp(unit, 0, 1);
+}
+
+export default function HomePage() {
+  const router = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [stage, setStage] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
     }
-  });
+  };
 
-  async function handleAnalyze() {
-    if (!image) return;
-    
-    setExtracting(true);
-    setError(null);
-    
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setFile(e.dataTransfer.files[0]);
+      setError('');
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+      setError('');
+    }
+  };
+
+  const handleAnalyze = async () => {
+    if (!file) return;
+
+    setLoading(true);
+    setProgress(0);
+    setStage('Extracting text...');
+    setError('');
+
     try {
-      const response = await fetch('/api/extract', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image }),
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        if (data.values && data.values.length > 0) {
-          setResults(data.values);
-        } else {
-          setError('No lab values found in this image. Please make sure you uploaded a lab report with test results.');
-        }
+      let ocrResult: { text: string; confidence: number };
+
+      // Dynamically import PDF handler
+      const pdfHandler = await import('@/lib/agents/parser/pdf-handler');
+
+      // Check if PDF
+      if (pdfHandler.isPDF(file)) {
+        console.log('🔍 Detected PDF file');
+        setStage('Converting PDF to images...');
+        setProgress(10);
+
+        const images = await pdfHandler.convertPdfToImages(file);
+        console.log(`📄 PDF converted to ${images.length} page(s)`);
+
+        setStage(`Extracting text from ${images.length} page(s)...`);
+
+        ocrResult = await extractTextFromMultipleImages(images, (p, pageNum, totalPages) => {
+          const unit = normalizeToUnit(p); // 0..1
+          // Map OCR progress into 10% → 70%
+          const mapped = Math.round(10 + unit * 60);
+          setProgress(clamp(mapped, 0, 100));
+          setStage(`Processing page ${pageNum} of ${totalPages}...`);
+        });
       } else {
-        setError(data.error || 'Failed to extract values. Please try again.');
+        console.log('🔍 Detected image file');
+        setStage('Extracting text from image...');
+        ocrResult = await extractTextFromImage(file, (p) => {
+          const unit = normalizeToUnit(p); // 0..1
+          // Map OCR progress into 0% → 70%
+          const mapped = Math.round(unit * 70);
+          setProgress(clamp(mapped, 0, 100));
+        });
       }
+
+      console.log('📄 OCR Result:', ocrResult.text);
+      console.log('📊 OCR Confidence:', Math.round(ocrResult.confidence * 100) + '%');
+
+      // ✅ NOW: Orchestrator becomes source of truth
+      setStage('Running multi-agent analysis...');
+      setProgress(75);
+
+      const workflowResult = await processLabText(ocrResult.text, ocrResult.confidence);
+
+      // If no markers, show a friendly error
+      const markerCount = workflowResult?.parsed?.markers?.length ?? 0;
+      if (markerCount === 0) {
+        setError('No lab markers found. Please try a clearer photo/PDF or a different page.');
+        setLoading(false);
+        setProgress(0);
+        setStage('');
+        return;
+      }
+
+      setStage('Saving session...');
+      setProgress(90);
+
+      // ✅ Store EVERYTHING as one session object
+      sessionStorage.setItem(
+        'analysisSession',
+        JSON.stringify({
+          id: crypto.randomUUID(),
+          createdAt: new Date().toISOString(),
+          ...workflowResult,
+        })
+      );
+
+      // (optional) cleanup old storage keys so you don’t accidentally read stale data elsewhere
+      sessionStorage.removeItem('extractedMarkers');
+      sessionStorage.removeItem('uploadTime');
+
+      setProgress(100);
+      setTimeout(() => {
+        router.push('/results');
+      }, 300);
     } catch (err) {
-      console.error('Error:', err);
-      setError('Network error. Please check your connection and try again.');
-    } finally {
-      setExtracting(false);
+      console.error('❌ Analysis error:', err);
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      setError(msg);
+      setLoading(false);
+      setProgress(0);
+      setStage('');
     }
-  }
+  };
+
+  const clampedProgress = clamp(Math.round(progress), 0, 100);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <div className="container mx-auto px-4 py-16">
+        {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            Lab Results Literacy Companion
-          </h1>
-          <p className="text-lg text-gray-600">
-            Understand your lab results. Prepare for your doctor visit.
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
-            🔒 Privacy-first • 100% local processing
-          </p>
+          <h1 className="text-5xl font-bold mb-4">Lab Results Literacy Companion</h1>
+          <p className="text-xl text-gray-600 mb-2">Understand your lab results. Prepare for your doctor visit.</p>
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+            <span className="text-lg">🔒</span>
+            <span>Privacy-first • 100% local processing</span>
+          </div>
         </div>
 
-        {!image && (
-          <Card className="p-12">
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors ${
-                isDragActive 
-                  ? 'border-blue-500 bg-blue-50' 
-                  : 'border-gray-300 hover:border-blue-400'
-              }`}
-            >
-              <input {...getInputProps()} />
-              <div className="text-6xl mb-4">📋</div>
-              <div className="text-xl font-semibold text-gray-700 mb-2">
-                {isDragActive ? 'Drop here' : 'Upload Your Lab Results'}
-              </div>
-              <div className="text-gray-500 mb-6">
-                Drag & drop or click to upload
-              </div>
-              <Button size="lg">Choose File</Button>
-            </div>
+        {/* Error Message */}
+        {error && (
+          <Card className="max-w-3xl mx-auto p-4 mb-6 bg-red-50 border-red-200">
+            <p className="text-red-700 text-sm">⚠️ {error}</p>
           </Card>
         )}
 
-        {image && (
-          <Card className="p-8">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold">Preview</h2>
-                <p className="text-gray-600">{fileName}</p>
-              </div>
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setImage(null);
-                  setResults(null);
-                  setError(null);
-                  setFileName('');
-                }}
+        {/* Upload Area */}
+        <Card className="max-w-3xl mx-auto p-8">
+          {!loading && (
+            <>
+              <div
+                className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
+                  dragActive ? 'border-blue-500 bg-blue-50' : file ? 'border-green-500 bg-green-50' : 'border-gray-300'
+                }`}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
               >
-                {results ? 'Upload Another Report' : 'Remove'}
-              </Button>
-            </div>
-            
-            <img
-              src={image}
-              alt="Lab results"
-              className="max-w-full rounded-lg border mb-8"
-            />
+                <div className="text-6xl mb-4">{file ? '✓' : '📋'}</div>
 
-            <Button 
-              className="w-full" 
-              size="lg"
-              onClick={handleAnalyze}
-              disabled={extracting}
-            >
-              {extracting ? '⏳ Analyzing...' : '📊 Analyze Results'}
-            </Button>
+                <h2 className="text-2xl font-semibold mb-2">{file ? file.name : 'Upload Your Lab Results'}</h2>
 
-            {error && (
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-800 text-sm">
-                  <strong>Error:</strong> {error}
+                <p className="text-gray-600 mb-6">
+                  {file ? 'Ready to analyze' : 'Drag & drop or click to upload (Images or PDF)'}
                 </p>
-              </div>
-            )}
 
-            {results && results.length > 0 && (
-              <div className="mt-8">
-                <h3 className="text-xl font-bold mb-4">Extracted Values:</h3>
-                <div className="border rounded-lg overflow-hidden">
-                  <table className="w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left">Marker</th>
-                        <th className="px-4 py-3 text-left">Value</th>
-                        <th className="px-4 py-3 text-left">Reference</th>
-                        <th className="px-4 py-3 text-left">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {results.map((result, idx) => (
-                        <tr key={idx} className="border-t hover:bg-gray-50">
-                          <td className="px-4 py-3 font-medium">
-                            <a 
-                              href={`/marker/${encodeURIComponent(result.marker)}`}
-                              className="text-blue-600 hover:underline cursor-pointer"
-                            >
-                              {result.marker}
-                            </a>
-                          </td>
-                          <td className="px-4 py-3">{result.value} {result.unit}</td>
-                          <td className="px-4 py-3 text-sm text-gray-600">
-                            {result.referenceRange}
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className={`px-2 py-1 rounded text-sm font-medium ${
-                              result.status === 'low' ? 'bg-yellow-100 text-yellow-800' :
-                              result.status === 'high' ? 'bg-red-100 text-red-800' :
-                              'bg-green-100 text-green-800'
-                            }`}>
-                              {result.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <input type="file" id="file-upload" accept="image/*,.pdf" onChange={handleFileChange} className="hidden" />
+
+                <label htmlFor="file-upload">
+                  <Button
+                    type="button"
+                    size="lg"
+                    className="cursor-pointer"
+                    onClick={() => document.getElementById('file-upload')?.click()}
+                  >
+                    Choose File
+                  </Button>
+                </label>
+              </div>
+
+              {file && (
+                <div className="mt-6 text-center">
+                  <Button size="lg" onClick={handleAnalyze} className="px-12">
+                    🔍 Analyze Lab Report
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-3">Processing happens locally on your device</p>
                 </div>
-              </div>
-            )}
+              )}
+            </>
+          )}
 
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600 text-center">
-                ⚠️ <strong>Educational only.</strong> Not medical advice.
-              </p>
+          {loading && (
+            <div className="text-center py-8">
+              <div className="mb-6">
+                <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600"></div>
+              </div>
+
+              <h3 className="text-xl font-semibold mb-2">{stage}</h3>
+              <p className="text-gray-600 mb-4">{clampedProgress}%</p>
+
+              <div className="w-full bg-gray-200 rounded-full h-3 max-w-md mx-auto">
+                <div
+                  className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                  style={{ width: `${clampedProgress}%` }}
+                />
+              </div>
+
+              <p className="text-sm text-gray-500 mt-4">🔒 Your data is being processed locally in your browser</p>
             </div>
-          </Card>
-        )}
+          )}
+        </Card>
       </div>
     </main>
   );

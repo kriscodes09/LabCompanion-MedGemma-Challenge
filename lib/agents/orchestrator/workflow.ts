@@ -1,87 +1,232 @@
-import type { Evidence, LabMarker, MarkerContext, WorkflowResult } from '../types';
+// lib/agents/orchestrator/workflow.ts
 
-import { parseLabReport, normalizeMarkers } from '../parser';
+import type {
+  Evidence,
+  LabMarker,
+  MarkerContext,
+  WorkflowResult,
+  WorkflowSafetySummary,
+  AgentLogItem,
+  ParseQualitySummary,
+} from '../types';
+
+import { normalizeMarkers } from '../parser';
+import { parseLabText } from '../parser/pattern-matcher';
+
 import { generateContextForMarker } from '../context';
 import { generateEvidence } from '../evidence';
 import { generateQuestions } from '../questions';
 import { rewriteToSafe } from '../safety/rewriter';
 
-/**
- * Main orchestrator workflow - coordinates all agents
- * Entry point for processing a complete lab report
- */
-export async function processLabReport(imageBase64: string): Promise<WorkflowResult> {
-  const startTime = Date.now();
+const now = () => Date.now();
 
-  console.log('🎯 Starting workflow orchestration...');
-
-  try {
-    // STEP 1: Parse lab report (Parser Agent)
-    console.log('📄 Step 1/5: Parsing lab report...');
-    const parsed = await parseLabReport(imageBase64);
-
-    if (!parsed.markers || parsed.markers.length === 0) {
-      throw new Error('No markers could be extracted from the lab report');
-    }
-
-    // Normalize marker names
-    const normalized = normalizeMarkers(parsed.markers);
-    console.log(`✅ Extracted ${normalized.length} markers`);
-
-    // STEP 2: Generate context for each marker (Context Agent)
-    console.log('📚 Step 2/5: Generating educational context...');
-    const contexts = await Promise.all(
-      normalized.map((marker: LabMarker) =>
-        generateContextForMarker(marker.name, typeof marker.value === 'number' ? marker.value : undefined)
-      )
-    );
-    console.log(`✅ Generated context for ${contexts.length} markers`);
-
-    // STEP 3: Generate evidence (Evidence Agent)
-    console.log('🔬 Step 3/5: Generating evidence and food patterns...');
-    const evidence = await Promise.all(
-      normalized.map((marker: LabMarker) => generateEvidence(marker.name))
-    );
-    console.log(`✅ Generated evidence for ${evidence.length} markers`);
-
-    // STEP 4: Generate questions (Questions Agent)
-    console.log('❓ Step 4/5: Generating doctor questions...');
-    const questions = await generateQuestions(normalized);
-    console.log(`✅ Generated ${questions.length} questions`);
-
-    // STEP 5: Safety validation (Safety Agent)
-    console.log('🛡️  Step 5/5: Running safety validation...');
-    const safetyResults = await validateAllContent(contexts, evidence);
-    console.log(`✅ Safety check complete: ${safetyResults.violations} violations found`);
-
-    const processingTime = Date.now() - startTime;
-    console.log(`🎉 Workflow complete in ${processingTime}ms`);
-
-    return {
-      parsed: {
-        ...parsed,
-        markers: normalized,
-      },
-      contexts: safetyResults.contexts,
-      evidence: safetyResults.evidence,
-      questions,
-      safetyChecks: {
-        allSafe: safetyResults.allSafe,
-        checkedItems: safetyResults.checkedItems,
-        violations: safetyResults.violations,
-      },
-      processingTime,
-    };
-  } catch (error) {
-    console.error('❌ Workflow error:', error);
-    throw error;
-  }
+function pushLog(log: AgentLogItem[], item: AgentLogItem) {
+  log.push(item);
 }
 
 /**
- * Validate all generated content through Safety Agent
- * Returns rewritten copies (avoids mutating input objects)
+ * Parse quality (STRUCTURE reliability, not medical correctness)
+ * Returns 0–100 score + warnings to explain why.
  */
+function computeParseQuality(extractedText: string, markerCount: number): ParseQualitySummary {
+  const warnings: string[] = [];
+
+  const lines = extractedText
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  const totalLines = lines.length;
+
+  let score = 100;
+
+  if (markerCount === 0) {
+    return { score: 0, warnings: ['No lab markers detected in OCR text.'] };
+  }
+
+  // Marker density heuristic
+  const density = markerCount / Math.max(totalLines, 1);
+  if (density < 0.05) {
+    score -= 25;
+    warnings.push('Very low marker density — OCR may be noisy or the report format may be unusual.');
+  }
+
+  // Low marker count
+  if (markerCount < 5) {
+    score -= 15;
+    warnings.push('Few markers detected — report may be partial or OCR missed rows.');
+  }
+
+  // If OCR text is huge but markers are small → likely noise / headers / junk
+  if (totalLines > 200 && markerCount < 10) {
+    score -= 20;
+    warnings.push('Lots of OCR text but few markers — consider cropping to just the results table.');
+  }
+
+  // Clamp
+  score = Math.max(0, Math.min(100, score));
+
+  return { score, warnings };
+}
+
+export async function processLabText(extractedText: string, ocrConfidence: number): Promise<WorkflowResult> {
+  const startTime = now();
+  const agentLog: AgentLogItem[] = [];
+
+  try {
+    // 1) Parser Agent
+    const t1 = now();
+    const extracted = parseLabText(extractedText);
+
+    pushLog(agentLog, {
+      agent: 'Parser Agent',
+      status: extracted.length > 0 ? 'ok' : 'error',
+      ms: now() - t1,
+      message: extracted.length > 0 ? `Extracted ${extracted.length} marker lines` : 'No markers extracted',
+    });
+
+    if (!extracted || extracted.length === 0) {
+      throw new Error('No lab markers found in OCR text');
+    }
+
+    // 2) Convert to LabMarker[]
+    const t2 = now();
+    const asLabMarkers: LabMarker[] = extracted.map((m) => ({
+      name: m.name,
+      value: m.value,
+      unit: m.unit,
+      referenceRange: m.referenceRange
+        ? {
+            low: m.referenceRange.low,
+            high: m.referenceRange.high,
+            unit: m.referenceRange.unit,
+          }
+        : undefined,
+      flagged: m.status !== 'normal',
+    }));
+
+    const normalized = normalizeMarkers(asLabMarkers);
+
+    pushLog(agentLog, {
+      agent: 'Normalizer Agent',
+      status: normalized.length > 0 ? 'ok' : 'warn',
+      ms: now() - t2,
+      message: `Normalized ${normalized.length} markers`,
+    });
+
+    // ✅ Parse Quality (after normalization so junk markers don’t inflate score)
+    const parseQuality = computeParseQuality(extractedText, normalized.length);
+
+    // 3) Context Agent
+    const t3 = now();
+    const contexts: MarkerContext[] = await Promise.all(
+      normalized.map((marker) =>
+        generateContextForMarker(marker.name, typeof marker.value === 'number' ? marker.value : undefined)
+      )
+    );
+
+    pushLog(agentLog, {
+      agent: 'Context Agent',
+      status: 'ok',
+      ms: now() - t3,
+      message: `Generated ${contexts.length} contexts`,
+    });
+
+    // 4) Evidence Agent
+    const t4 = now();
+    const evidence: Evidence[] = await Promise.all(normalized.map((marker) => generateEvidence(marker.name)));
+
+    pushLog(agentLog, {
+      agent: 'Evidence Agent',
+      status: 'ok',
+      ms: now() - t4,
+      message: `Generated ${evidence.length} evidence blocks`,
+    });
+
+    // 5) Questions Agent
+    const t5 = now();
+    const questions = await generateQuestions(normalized);
+
+    pushLog(agentLog, {
+      agent: 'Questions Agent',
+      status: 'ok',
+      ms: now() - t5,
+      message: `Generated ${questions.length} questions`,
+    });
+
+    // 6) Safety Agent
+    const t6 = now();
+    const safety = await validateAllContent(contexts, evidence);
+
+    pushLog(agentLog, {
+      agent: 'Safety Agent',
+      status: safety.allSafe ? 'ok' : 'warn',
+      ms: now() - t6,
+      message: safety.allSafe ? 'All content passed safety checks' : `${safety.violations} rewrite(s) applied`,
+    });
+
+    const processingTime = now() - startTime;
+
+    const fallbackMarkers = safety.contexts
+      .filter((c) => c.generatedBy === 'Fallback')
+      .map((c) => c.markerName);
+
+    const warnings =
+      fallbackMarkers.length > 0
+        ? [`Fallback content used for ${fallbackMarkers.length} marker(s): ${fallbackMarkers.join(', ')}`]
+        : [];
+
+    const safetyChecks: WorkflowSafetySummary = {
+      allSafe: safety.allSafe,
+      checkedItems: safety.checkedItems,
+      violations: safety.violations,
+    };
+
+    return {
+      parsed: {
+        markers: normalized,
+        extractedText,
+        confidence: ocrConfidence,
+        timestamp: new Date().toISOString(),
+      },
+      contexts: safety.contexts,
+      evidence: safety.evidence,
+      questions,
+      safetyChecks,
+      processingTime,
+      warnings,
+      agentLog,
+      parseQuality,
+    };
+  } catch (err) {
+    const processingTime = now() - startTime;
+
+    pushLog(agentLog, {
+      agent: 'Orchestrator',
+      status: 'error',
+      ms: processingTime,
+      message: err instanceof Error ? err.message : 'Unknown error',
+    });
+
+    return {
+      parsed: {
+        markers: [],
+        extractedText,
+        confidence: ocrConfidence,
+        timestamp: new Date().toISOString(),
+      },
+      contexts: [],
+      evidence: [],
+      questions: [],
+      safetyChecks: { allSafe: false, checkedItems: 0, violations: 0 },
+      processingTime,
+      warnings: ['Workflow failed. See agent log for details.'],
+      agentLog,
+      parseQuality: { score: 0, warnings: ['Workflow failed before parse quality could be assessed.'] },
+    };
+  }
+}
+
 async function validateAllContent(
   contexts: MarkerContext[],
   evidence: Evidence[]
@@ -98,20 +243,27 @@ async function validateAllContent(
   const rewrittenContexts: MarkerContext[] = [];
 
   for (const context of contexts) {
-    // whatIsIt
     const w = await rewriteToSafe(context.whatIsIt);
     checkedItems++;
     if (!w.safe) totalViolations += w.violations.length;
 
-    // researchContext
     const r = await rewriteToSafe(context.researchContext);
     checkedItems++;
     if (!r.safe) totalViolations += r.violations.length;
+
+    let fpText = context.foodPatterns ?? '';
+    if (fpText.trim().length > 0) {
+      const fp = await rewriteToSafe(fpText);
+      checkedItems++;
+      if (!fp.safe) totalViolations += fp.violations.length;
+      fpText = fp.rewrittenText || fpText;
+    }
 
     rewrittenContexts.push({
       ...context,
       whatIsIt: w.rewrittenText || context.whatIsIt,
       researchContext: r.rewrittenText || context.researchContext,
+      foodPatterns: fpText,
     });
   }
 
@@ -121,9 +273,18 @@ async function validateAllContent(
     checkedItems++;
     if (!res.safe) totalViolations += res.violations.length;
 
+    let fp = ev.foodPatterns ?? '';
+    if (fp.trim().length > 0) {
+      const safeFp = await rewriteToSafe(fp);
+      checkedItems++;
+      if (!safeFp.safe) totalViolations += safeFp.violations.length;
+      fp = safeFp.rewrittenText || fp;
+    }
+
     rewrittenEvidence.push({
       ...ev,
       researchSummary: res.rewrittenText || ev.researchSummary,
+      foodPatterns: fp,
     });
   }
 
@@ -133,73 +294,5 @@ async function validateAllContent(
     violations: totalViolations,
     contexts: rewrittenContexts,
     evidence: rewrittenEvidence,
-  };
-}
-
-/**
- * Process a single marker (for targeted queries)
- */
-export async function processMarker(
-  markerName: string,
-  value?: number
-): Promise<{
-  context: MarkerContext;
-  evidence: Evidence;
-  safe: boolean;
-}> {
-  console.log(`🎯 Processing single marker: ${markerName}`);
-
-  const context = await generateContextForMarker(markerName, value);
-  const evidence = await generateEvidence(markerName);
-
-  const safetyResult = await rewriteToSafe(context.whatIsIt);
-  const safeContext: MarkerContext = {
-    ...context,
-    whatIsIt: !safetyResult.safe && safetyResult.rewrittenText ? safetyResult.rewrittenText : context.whatIsIt,
-  };
-
-  return {
-    context: safeContext,
-    evidence,
-    safe: safetyResult.safe,
-  };
-}
-
-/**
- * Batch process multiple markers without image upload
- */
-export async function processMarkerBatch(
-  markers: LabMarker[]
-): Promise<Omit<WorkflowResult, 'parsed'>> {
-  const startTime = Date.now();
-
-  console.log(`🎯 Processing batch of ${markers.length} markers...`);
-
-  const normalized = normalizeMarkers(markers);
-
-  const contexts = await Promise.all(
-    normalized.map((m: LabMarker) =>
-      generateContextForMarker(m.name, typeof m.value === 'number' ? m.value : undefined)
-    )
-  );
-
-  const evidence = await Promise.all(
-    normalized.map((m: LabMarker) => generateEvidence(m.name))
-  );
-
-  const questions = await generateQuestions(normalized);
-
-  const safetyResults = await validateAllContent(contexts, evidence);
-
-  return {
-    contexts: safetyResults.contexts,
-    evidence: safetyResults.evidence,
-    questions,
-    safetyChecks: {
-      allSafe: safetyResults.allSafe,
-      checkedItems: safetyResults.checkedItems,
-      violations: safetyResults.violations,
-    },
-    processingTime: Date.now() - startTime,
   };
 }

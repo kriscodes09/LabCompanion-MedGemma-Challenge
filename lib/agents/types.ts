@@ -14,6 +14,10 @@ export interface LabMarker {
   flagged?: boolean;
   confidence?: number; // extraction confidence (0–1)
 }
+export interface ParseQualitySummary {
+  score: number;          // 0–100
+  warnings: string[];     // human-readable
+}
 
 export interface ParsedLabReport {
   markers: LabMarker[];
@@ -74,6 +78,17 @@ export interface WorkflowSafetySummary {
   violations: number;
 }
 
+export interface AgentLogItem {
+  agent: string;
+  status: 'ok' | 'warn' | 'error';
+  ms?: number;
+  message?: string;
+}
+export type ParseQuality = {
+  score: number;      // 0–100
+  warnings: string[]; // human tips when OCR looks sketchy
+};
+
 export interface WorkflowResult {
   parsed: ParsedLabReport;
   contexts: MarkerContext[];
@@ -81,4 +96,13 @@ export interface WorkflowResult {
   questions: Question[];
   safetyChecks: WorkflowSafetySummary;
   processingTime: number;
+
+  // ✅ NEW (optional, non-breaking)
+  warnings?: string[];
+
+  // ✅ NEW (optional, non-breaking)
+  agentLog?: AgentLogItem[];
+  parseQuality?: ParseQualitySummary;
+  
 }
+
