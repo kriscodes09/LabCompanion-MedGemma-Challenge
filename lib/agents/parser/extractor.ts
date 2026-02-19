@@ -1,5 +1,7 @@
 import type { ParsedLabReport, LabMarker } from '../types';
-import { normalizeMarkerName, normalizeUnit } from './normalizer';
+import { normalizeMarkerName, normalizeUnit, isSupportedMarker } from './normalizer';
+import { filterMarkers } from './marker-filter';
+
 
 /**
  * NOTE:
@@ -17,9 +19,11 @@ export async function parseLabReport(input: string): Promise<ParsedLabReport> {
     // 1) If someone passed JSON text instead of an image, accept it.
     const jsonParsed = tryParseAsJson(input);
     if (jsonParsed) {
-      const markers = coerceMarkers(jsonParsed.markers ?? []);
+      const rawMarkers = coerceMarkers(jsonParsed.markers ?? []);
+      const { kept } = filterMarkers(rawMarkers);
+
       return {
-        markers,
+        markers: kept,
         extractedText: typeof jsonParsed.extractedText === 'string' ? jsonParsed.extractedText : '',
         confidence: typeof jsonParsed.confidence === 'number' ? jsonParsed.confidence : 0.8,
         timestamp: new Date().toISOString(),
@@ -28,11 +32,13 @@ export async function parseLabReport(input: string): Promise<ParsedLabReport> {
 
     // 2) If input looks like plain text, attempt lightweight parsing.
     if (looksLikeText(input)) {
-      const markers = extractMarkersFromText(input);
+      const rawMarkers = extractMarkersFromText(input);
+      const { kept } = filterMarkers(rawMarkers);
+
       return {
-        markers,
+        markers: kept,
         extractedText: input,
-        confidence: markers.length > 0 ? 0.6 : 0.2,
+        confidence: kept.length > 0 ? 0.6 : 0.2,
         timestamp: new Date().toISOString(),
       };
     }
@@ -64,14 +70,16 @@ export async function extractSingleMarker(input: string, markerName: string): Pr
 
   const jsonParsed = tryParseAsJson(input);
   if (jsonParsed?.markers) {
-    const markers = coerceMarkers(jsonParsed.markers);
-    const found = markers.find((m) => m.name.toLowerCase() === target);
+    const rawMarkers = coerceMarkers(jsonParsed.markers);
+    const { kept } = filterMarkers(rawMarkers);
+    const found = kept.find((m) => m.name.toLowerCase() === target);
     return found ?? null;
   }
 
   if (looksLikeText(input)) {
-    const markers = extractMarkersFromText(input);
-    const found = markers.find((m) => m.name.toLowerCase() === target);
+    const rawMarkers = extractMarkersFromText(input);
+    const { kept } = filterMarkers(rawMarkers);
+    const found = kept.find((m) => m.name.toLowerCase() === target);
     return found ?? null;
   }
 
@@ -125,8 +133,14 @@ function coerceMarker(raw: unknown): LabMarker | null {
   const unitRaw = raw.unit;
   const valueRaw = raw.value;
 
-  const name = typeof nameRaw === 'string' ? normalizeMarkerName(nameRaw) : '';
-  if (!name) return null;
+const name = typeof nameRaw === 'string' ? normalizeMarkerName(nameRaw) : '';
+if (!name) return null;
+
+// ✅ Whitelist enforcement
+if (!isSupportedMarker(name)) {
+  return null;
+}
+
 
   const value =
     typeof valueRaw === 'number'
@@ -166,12 +180,11 @@ function coerceReferenceRange(raw: unknown, fallbackUnit: string): LabMarker['re
   return { low, high, unit };
 }
 
-
 /**
  * Very lightweight plaintext extraction.
  * Supports lines like:
- *   Hemoglobin 14.2 g/dL (12.0-16.0)
- *   LDL Cholesterol: 120 mg/dL
+ * Hemoglobin 14.2 g/dL (12.0-16.0)
+ * LDL Cholesterol: 120 mg/dL
  */
 function extractMarkersFromText(text: string): LabMarker[] {
   const lines = text
@@ -183,9 +196,7 @@ function extractMarkersFromText(text: string): LabMarker[] {
 
   for (const line of lines) {
     // Try: "Name: value unit"
-    const m1 = line.match(
-      /^([A-Za-z][A-Za-z0-9\s()%.-]{1,60})[:\s]+(-?\d+(\.\d+)?)\s*([A-Za-zμ/%]+)?/
-    );
+    const m1 = line.match(/^([A-Za-z][A-Za-z0-9\s()%.-]{1,60})[:\s]+(-?\d+(\.\d+)?)\s*([A-Za-zμ/%]+)?/);
     if (!m1) continue;
 
     const rawName = m1[1].trim();

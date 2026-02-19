@@ -170,7 +170,7 @@ export default function MarkerDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
+      <main className="min-h-screen bg-linear-to-b from-blue-50 to-white p-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center py-20">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mb-4"></div>
@@ -183,7 +183,7 @@ export default function MarkerDetailPage() {
 
   if (notFound) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
+      <main className="min-h-screen bg-linear-to-b from-blue-50 to-white p-8">
         <div className="max-w-4xl mx-auto">
           <Button variant="outline" onClick={() => router.push('/results')} className="mb-4">
             ← Back to Results
@@ -207,7 +207,7 @@ export default function MarkerDetailPage() {
   const isFallback = generatedBy === 'Fallback';
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
+    <main className="min-h-screen bg-linear-to-b from-blue-50 to-white p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">

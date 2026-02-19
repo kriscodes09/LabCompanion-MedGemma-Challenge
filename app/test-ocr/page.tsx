@@ -64,7 +64,7 @@ export default function TestOCRPage() {
   const clampedProgress = clamp(Math.round(progress), 0, 100);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
+    <main className="min-h-screen bg-linear-to-b from-blue-50 to-white p-8">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-4xl font-bold mb-2">🧪 Tesseract.js OCR Test</h1>
         <p className="text-gray-600 mb-8">Verify that local OCR (100% browser-based) works correctly</p>

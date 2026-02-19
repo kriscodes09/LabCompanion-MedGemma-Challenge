@@ -23,10 +23,15 @@ type ExtractedMarker = {
 
 type MarkerContextLike = {
   markerName?: string;
-  marker?: string; // older shape support
+  marker?: string;
   whatIsIt: string;
   researchContext: string;
   foodPatterns?: string;
+};
+
+type PriorityArea = {
+  label: string;
+  icon: string;
 };
 
 function toNumber(value: unknown): number | null {
@@ -60,6 +65,70 @@ function formatRange(rr?: RefRange, fallbackUnit?: string): string {
   if (hasLow) return `≥ ${rr.low}${unit ? ` ${unit}` : ''}`.trim();
   if (hasHigh) return `≤ ${rr.high}${unit ? ` ${unit}` : ''}`.trim();
   return 'N/A';
+}
+
+function getPriorityAreas(markers: ExtractedMarker[]): PriorityArea[] {
+  const areas = new Map<string, PriorityArea>();
+
+  const add = (key: string, area: PriorityArea) => {
+    if (!areas.has(key)) areas.set(key, area);
+  };
+
+  for (const m of markers) {
+    const name = m.name.toLowerCase();
+
+    if (name.includes('cholesterol') || name.includes('ldl') || name.includes('hdl') || name.includes('triglycer')) {
+      add('cardio', { label: 'Cardiovascular health', icon: '🫀' });
+    }
+
+    if (name.includes('glucose') || name.includes('a1c') || name.includes('hemoglobin a1c')) {
+      add('metabolic', { label: 'Blood sugar / metabolic', icon: '🍬' });
+    }
+
+    if (name.includes('vitamin d') || name.includes('b12') || name.includes('folate') || name.includes('ferritin')) {
+      add('nutrients', { label: 'Nutrients', icon: '☀️' });
+    }
+
+    if (name.includes('creatinine') || name.includes('bun') || name.includes('egfr')) {
+      add('kidney', { label: 'Kidney function', icon: '🧪' });
+    }
+
+    if (name.includes('tsh') || name.includes('t3') || name.includes('t4')) {
+      add('thyroid', { label: 'Thyroid', icon: '🦋' });
+    }
+
+    if (name.includes('hemoglobin') || name.includes('hematocrit') || name.includes('rbc') || name.includes('wbc')) {
+      add('blood', { label: 'Blood health', icon: '🩸' });
+    }
+
+    if (name.includes('alt') || name.includes('ast') || name.includes('bilirubin') || name.includes('alkaline phosphatase')) {
+      add('liver', { label: 'Liver', icon: '🧫' });
+    }
+  }
+
+  return Array.from(areas.values()).slice(0, 3);
+}
+
+function getNextSteps(lowCount: number, highCount: number): string[] {
+  const flagged = lowCount + highCount;
+
+  if (flagged === 0) {
+    return ['Save a copy for your records', 'Bring results to your next routine visit', 'Track changes over time if you retest'];
+  }
+
+  if (flagged <= 2) {
+    return [
+      'Bring flagged markers to your next appointment',
+      'Ask if retesting is needed and when',
+      'Confirm context (fasting, meds, recent illness)',
+    ];
+  }
+
+  return [
+    'Focus the visit on the top 2–3 flagged markers',
+    'Ask which results need follow-up vs. watch-and-wait',
+    'Discuss retest timing and possible confounders',
+  ];
 }
 
 export default function ResultsPage() {
@@ -99,13 +168,7 @@ export default function ResultsPage() {
                 }
               : undefined;
 
-          return {
-            name: m.name,
-            value: numericValue,
-            unit,
-            referenceRange: rr,
-            status,
-          };
+          return { name: m.name, value: numericValue, unit, referenceRange: rr, status };
         })
         .filter((x): x is ExtractedMarker => x !== null);
 
@@ -120,6 +183,10 @@ export default function ResultsPage() {
   const lowMarkers = useMemo(() => markers.filter((m) => m.status === 'low'), [markers]);
   const normalMarkers = useMemo(() => markers.filter((m) => m.status === 'normal'), [markers]);
   const highMarkers = useMemo(() => markers.filter((m) => m.status === 'high'), [markers]);
+
+  const priorityAreas = useMemo(() => getPriorityAreas([...lowMarkers, ...highMarkers]), [lowMarkers, highMarkers]);
+
+  const nextSteps = useMemo(() => getNextSteps(lowMarkers.length, highMarkers.length), [lowMarkers.length, highMarkers.length]);
 
   const getStatusColor = (status: ExtractedMarker['status']) => {
     switch (status) {
@@ -165,11 +232,7 @@ export default function ResultsPage() {
           referenceRange: m.referenceRange,
           status: m.status,
           medgemmaContent: ctx
-            ? {
-                whatIsIt: ctx.whatIsIt,
-                researchContext: ctx.researchContext,
-                foodPatterns: ctx.foodPatterns ?? '',
-              }
+            ? { whatIsIt: ctx.whatIsIt, researchContext: ctx.researchContext, foodPatterns: ctx.foodPatterns ?? '' }
             : undefined,
         };
       });
@@ -211,11 +274,7 @@ export default function ResultsPage() {
                 <div className="text-right">
                   <p
                     className={`text-3xl font-bold ${
-                      marker.status === 'low'
-                        ? 'text-red-700'
-                        : marker.status === 'high'
-                          ? 'text-yellow-700'
-                          : 'text-green-700'
+                      marker.status === 'low' ? 'text-red-700' : marker.status === 'high' ? 'text-yellow-700' : 'text-green-700'
                     }`}
                   >
                     {marker.value}
@@ -245,7 +304,7 @@ export default function ResultsPage() {
       : 'Parse quality may be unreliable';
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
+    <main className="min-h-screen bg-linear-to-b from-blue-50 to-white p-8">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <Button variant="outline" onClick={() => router.push('/')} className="mb-4">
@@ -258,15 +317,68 @@ export default function ResultsPage() {
               <p className="text-gray-600">{markers.length} markers analyzed • Click any marker to learn more</p>
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleDeleteAll}
-              className="border-red-300 text-red-700 hover:bg-red-50"
-            >
+            <Button variant="outline" size="sm" onClick={handleDeleteAll} className="border-red-300 text-red-700 hover:bg-red-50">
               🗑️ Delete All Data
             </Button>
           </div>
+
+          {/* 📊 RISK SUMMARY DASHBOARD */}
+          <Card className="mt-6 p-5 border-blue-200 bg-white/80">
+            <div className="flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <div className="text-sm text-gray-500 mb-1">📊 Health Snapshot</div>
+                <div className="text-lg font-bold">Overview</div>
+                <div className="text-sm text-gray-600 mt-1">
+                  {lowMarkers.length + highMarkers.length === 0
+                    ? 'No out-of-range markers detected in this report.'
+                    : 'Use this to guide a focused doctor visit conversation.'}
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <div className="rounded-lg border p-3 min-w-27.5 text-center">
+                  <div className="text-2xl font-bold">{lowMarkers.length}</div>
+                  <div className="text-xs text-gray-600">Below range</div>
+                </div>
+                <div className="rounded-lg border p-3 min-w-27.5 text-center">
+                  <div className="text-2xl font-bold">{highMarkers.length}</div>
+                  <div className="text-xs text-gray-600">Above range</div>
+                </div>
+                <div className="rounded-lg border p-3 min-w-27.5 text-center">
+                  <div className="text-2xl font-bold">{normalMarkers.length}</div>
+                  <div className="text-xs text-gray-600">Within range</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 grid md:grid-cols-2 gap-4">
+              <div className="rounded-lg border p-4 bg-white">
+                <div className="font-semibold mb-2">Priority areas</div>
+                {priorityAreas.length === 0 ? (
+                  <div className="text-sm text-gray-600">None flagged in this report.</div>
+                ) : (
+                  <ul className="space-y-1 text-sm text-gray-700">
+                    {priorityAreas.map((a) => (
+                      <li key={a.label} className="flex items-center gap-2">
+                        <span>{a.icon}</span>
+                        <span>{a.label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="rounded-lg border p-4 bg-white">
+                <div className="font-semibold mb-2">Next steps (visit framing)</div>
+                <ul className="space-y-1 text-sm text-gray-700 list-disc pl-5">
+                  {nextSteps.map((s) => (
+                    <li key={s}>{s}</li>
+                  ))}
+                </ul>
+                <div className="text-xs text-gray-500 mt-3">Educational only — use as discussion prep, not medical advice.</div>
+              </div>
+            </div>
+          </Card>
 
           {/* ✅ Only show when parse quality is low */}
           {showParseQuality && (
@@ -287,9 +399,7 @@ export default function ResultsPage() {
                     </ul>
                   )}
 
-                  <div className="text-sm text-gray-600 mt-3">
-                    Tip: try a clearer photo, crop to the results table, or upload a different page.
-                  </div>
+                  <div className="text-sm text-gray-600 mt-3">Tip: try a clearer photo, crop to the results table, or upload a different page.</div>
                 </div>
               </div>
             </Card>
@@ -299,11 +409,11 @@ export default function ResultsPage() {
           {session && (
             <div className="mt-6">
               <AgentDashboard
-  agentLog={session.agentLog}
-  safetyChecks={session.safetyChecks}
-  processingTime={session.processingTime}
-  parseQuality={session.parseQuality}
-/>
+                agentLog={session.agentLog}
+                safetyChecks={session.safetyChecks}
+                processingTime={session.processingTime}
+                parseQuality={session.parseQuality}
+              />
             </div>
           )}
         </div>
@@ -317,6 +427,16 @@ export default function ResultsPage() {
             <Button size="lg" className="px-8" onClick={handleExportPDF} disabled={isExporting}>
               {isExporting ? '⏳ Generating PDF...' : '📄 Export Complete Report to PDF'}
             </Button>
+            <div>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => router.push('/safety')}
+        className="text-gray-500 hover:text-gray-800"
+      >
+        View Safety & Model Boundaries
+      </Button>
+    </div>
           </div>
         )}
       </div>

@@ -4,10 +4,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { extractTextFromImage, extractTextFromMultipleImages } from '@/lib/agents/parser/tesseract-ocr';
 
-// ✅ NEW: call the orchestrator
+import { extractTextFromImage, extractTextFromMultipleImages } from '@/lib/agents/parser/tesseract-ocr';
 import { processLabText } from '@/lib/agents/orchestrator/workflow';
+import type { WorkflowResult } from '@/lib/agents/types';
+
+import { ALL_NORMAL_SAMPLE, MIXED_RESULTS_SAMPLE, SOME_HIGH_SAMPLE } 
+from '@/data/sample-reports';
 
 function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
@@ -25,8 +28,11 @@ function normalizeToUnit(p: number) {
   return clamp(unit, 0, 1);
 }
 
+const SESSION_KEY = 'analysisSession';
+
 export default function HomePage() {
   const router = useRouter();
+
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -37,11 +43,8 @@ export default function HomePage() {
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true);
-    } else if (e.type === 'dragleave') {
-      setDragActive(false);
-    }
+    if (e.type === 'dragenter' || e.type === 'dragover') setDragActive(true);
+    if (e.type === 'dragleave') setDragActive(false);
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -59,6 +62,55 @@ export default function HomePage() {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
       setError('');
+    }
+  };
+
+  const saveSessionAndGo = (workflowResult: WorkflowResult) => {
+    sessionStorage.setItem(
+      SESSION_KEY,
+      JSON.stringify({
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+        ...workflowResult,
+      })
+    );
+
+    // optional cleanup (only if you previously used these keys)
+    sessionStorage.removeItem('workflowResult');
+    sessionStorage.removeItem('extractedMarkers');
+    sessionStorage.removeItem('uploadTime');
+
+    router.push('/results');
+  };
+
+  const handleSampleLoad = async (sampleText: string) => {
+    setError('');
+    setFile(null);
+    setLoading(true);
+    setProgress(50);
+    setStage('Processing sample report...');
+
+    try {
+      const workflowResult = await processLabText(sampleText, 100);
+      
+      const markerCount = workflowResult?.parsed?.markers?.length ?? 0;
+      if (markerCount === 0) {
+        setError('No lab markers found in sample.');
+        setLoading(false);
+        setProgress(0);
+        setStage('');
+        return;
+      }
+
+      setProgress(100);
+      setStage('Sample loaded successfully');
+      saveSessionAndGo(workflowResult);
+    } catch (err) {
+      console.error('❌ Sample processing error:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      setLoading(false);
+      setProgress(0);
+      setStage('');
     }
   };
 
@@ -108,7 +160,7 @@ export default function HomePage() {
       console.log('📄 OCR Result:', ocrResult.text);
       console.log('📊 OCR Confidence:', Math.round(ocrResult.confidence * 100) + '%');
 
-      // ✅ NOW: Orchestrator becomes source of truth
+      // Orchestrator becomes source of truth
       setStage('Running multi-agent analysis...');
       setProgress(75);
 
@@ -127,24 +179,7 @@ export default function HomePage() {
       setStage('Saving session...');
       setProgress(90);
 
-      // ✅ Store EVERYTHING as one session object
-      sessionStorage.setItem(
-        'analysisSession',
-        JSON.stringify({
-          id: crypto.randomUUID(),
-          createdAt: new Date().toISOString(),
-          ...workflowResult,
-        })
-      );
-
-      // (optional) cleanup old storage keys so you don’t accidentally read stale data elsewhere
-      sessionStorage.removeItem('extractedMarkers');
-      sessionStorage.removeItem('uploadTime');
-
-      setProgress(100);
-      setTimeout(() => {
-        router.push('/results');
-      }, 300);
+      saveSessionAndGo(workflowResult);
     } catch (err) {
       console.error('❌ Analysis error:', err);
       const msg = err instanceof Error ? err.message : 'Unknown error';
@@ -158,7 +193,7 @@ export default function HomePage() {
   const clampedProgress = clamp(Math.round(progress), 0, 100);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <main className="min-h-screen bg-linear-to-b from-blue-50 to-white">
       <div className="container mx-auto px-4 py-16">
         {/* Header */}
         <div className="text-center mb-12">
@@ -198,7 +233,13 @@ export default function HomePage() {
                   {file ? 'Ready to analyze' : 'Drag & drop or click to upload (Images or PDF)'}
                 </p>
 
-                <input type="file" id="file-upload" accept="image/*,.pdf" onChange={handleFileChange} className="hidden" />
+                <input
+                  type="file"
+                  id="file-upload"
+                  accept="image/*,.pdf"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
 
                 <label htmlFor="file-upload">
                   <Button
@@ -220,6 +261,36 @@ export default function HomePage() {
                   <p className="text-xs text-gray-500 mt-3">Processing happens locally on your device</p>
                 </div>
               )}
+
+              {/* Sample buttons */}
+              <div className="mt-8 text-center">
+                <p className="text-sm text-gray-500 mb-3">Or try a sample report:</p>
+                <div className="flex gap-3 justify-center flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => handleSampleLoad(ALL_NORMAL_SAMPLE)}
+                    className="px-4 py-2 rounded-lg border hover:bg-gray-100 transition"
+                  >
+                    All Normal
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSampleLoad(MIXED_RESULTS_SAMPLE)}
+                    className="px-4 py-2 rounded-lg border hover:bg-gray-100 transition"
+                  >
+                    Mixed Results
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSampleLoad(SOME_HIGH_SAMPLE)}
+                    className="px-4 py-2 rounded-lg border hover:bg-gray-100 transition"
+                  >
+                    Multiple High
+                  </button>
+                </div>
+              </div>
             </>
           )}
 
