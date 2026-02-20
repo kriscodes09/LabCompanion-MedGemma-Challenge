@@ -335,20 +335,20 @@ export default function ResultsPage() {
                 </div>
               </div>
 
-              <div className="flex gap-3">
-                <div className="rounded-lg border p-3 min-w-27.5 text-center">
-                  <div className="text-2xl font-bold">{lowMarkers.length}</div>
-                  <div className="text-xs text-gray-600">Below range</div>
-                </div>
-                <div className="rounded-lg border p-3 min-w-27.5 text-center">
-                  <div className="text-2xl font-bold">{highMarkers.length}</div>
-                  <div className="text-xs text-gray-600">Above range</div>
-                </div>
-                <div className="rounded-lg border p-3 min-w-27.5 text-center">
-                  <div className="text-2xl font-bold">{normalMarkers.length}</div>
-                  <div className="text-xs text-gray-600">Within range</div>
-                </div>
-              </div>
+              <div className="flex flex-wrap gap-3 justify-center sm:justify-end">
+  <div className="rounded-lg border p-3 min-w-25 flex-1 sm:flex-initial text-center">
+    <div className="text-2xl font-bold">{lowMarkers.length}</div>
+    <div className="text-xs text-gray-600">Below range</div>
+  </div>
+  <div className="rounded-lg border p-3 min-w-25 flex-1 sm:flex-initial text-center">
+    <div className="text-2xl font-bold">{highMarkers.length}</div>
+    <div className="text-xs text-gray-600">Above range</div>
+  </div>
+  <div className="rounded-lg border p-3 min-w-25 flex-1 sm:flex-initial text-center">
+    <div className="text-2xl font-bold">{normalMarkers.length}</div>
+    <div className="text-xs text-gray-600">Within range</div>
+  </div>
+</div>
             </div>
 
             <div className="mt-4 grid md:grid-cols-2 gap-4">
