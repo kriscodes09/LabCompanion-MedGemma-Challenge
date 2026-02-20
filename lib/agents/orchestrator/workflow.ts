@@ -89,8 +89,7 @@ export async function processLabText(extractedText: string, ocrConfidence: numbe
       throw new Error('No lab markers found in OCR text');
     }
 
-    // 2) Convert to LabMarker[]
-    const t2 = now();
+    // 2) Normalize markers (part of Parser Agent - no separate log entry)
     const asLabMarkers: LabMarker[] = extracted.map((m) => ({
       name: m.name,
       value: m.value,
@@ -107,14 +106,7 @@ export async function processLabText(extractedText: string, ocrConfidence: numbe
 
     const normalized = normalizeMarkers(asLabMarkers);
 
-    pushLog(agentLog, {
-      agent: 'Normalizer Agent',
-      status: normalized.length > 0 ? 'ok' : 'warn',
-      ms: now() - t2,
-      message: `Normalized ${normalized.length} markers`,
-    });
-
-    // ✅ Parse Quality (after normalization so junk markers don’t inflate score)
+    // ✅ Parse Quality (after normalization so junk markers don't inflate score)
     const parseQuality = computeParseQuality(extractedText, normalized.length);
 
     // 3) Context Agent
@@ -166,6 +158,14 @@ export async function processLabText(extractedText: string, ocrConfidence: numbe
     });
 
     const processingTime = now() - startTime;
+
+    // Add Orchestrator summary at end
+    pushLog(agentLog, {
+      agent: 'Orchestrator',
+      status: 'ok',
+      ms: processingTime,
+      message: `Coordinated ${agentLog.length} agents`,
+    });
 
     const fallbackMarkers = safety.contexts
       .filter((c) => c.generatedBy === 'Fallback')
