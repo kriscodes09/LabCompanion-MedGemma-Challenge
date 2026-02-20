@@ -40,9 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# local generated data
-/data/*.json
-
 # python artifacts
 __pycache__/
 *.pyc
