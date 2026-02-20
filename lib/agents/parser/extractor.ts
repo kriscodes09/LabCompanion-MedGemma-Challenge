@@ -3,17 +3,7 @@ import { normalizeMarkerName, normalizeUnit, isSupportedMarker } from './normali
 import { filterMarkers } from './marker-filter';
 
 
-/**
- * NOTE:
- * This extractor is intentionally LLM-free (no Anthropic/Claude).
- *
- * For hackathon/demo stability, it:
- * 1) Tries to parse JSON if the input is JSON text (helpful for dev/testing)
- * 2) Tries to extract markers from plaintext if the input contains text
- * 3) Otherwise returns an empty ParsedLabReport with low confidence
- *
- * Later you can replace internals with a MedGemma/Vision/OCR pipeline.
- */
+
 export async function parseLabReport(input: string): Promise<ParsedLabReport> {
   try {
     // 1) If someone passed JSON text instead of an image, accept it.

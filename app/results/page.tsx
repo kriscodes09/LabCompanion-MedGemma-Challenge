@@ -369,7 +369,7 @@ export default function ResultsPage() {
               </div>
 
               <div className="rounded-lg border p-4 bg-white">
-                <div className="font-semibold mb-2">Next steps (visit framing)</div>
+                <div className="font-semibold mb-2">Preparing for your visit:</div>
                 <ul className="space-y-1 text-sm text-gray-700 list-disc pl-5">
                   {nextSteps.map((s) => (
                     <li key={s}>{s}</li>
