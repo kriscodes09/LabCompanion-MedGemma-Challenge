@@ -12,9 +12,9 @@ export default function AboutPage() {
       {/* Header */}
       <div className="border-b bg-gray-50">
         <div className="max-w-4xl mx-auto px-8 py-6">
-          <Button variant="ghost" onClick={() => router.push('/')} className="mb-4">
-            ← Back to Home
-          </Button>
+         <Button variant="ghost" onClick={() => router.back()} className="mb-4">
+  ← Back to Results
+</Button>
           <h1 className="text-4xl font-bold text-gray-900">Lab Literacy Companion</h1>
           <p className="text-lg text-gray-600 mt-2">
            
@@ -162,13 +162,6 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
-
-        {/* CTA */}
-        <div className="text-center pt-8">
-          <Button size="lg" onClick={() => router.push('/')}>
-            Get Started
-          </Button>
-        </div>
 
         {/* Footer */}
         <div className="border-t pt-8 mt-12">
