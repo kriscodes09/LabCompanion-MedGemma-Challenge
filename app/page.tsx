@@ -16,12 +16,7 @@ function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
 }
 
-/**
- * Tesseract progress sometimes arrives as:
- *  - 0..1  (fraction)
- *  - 0..100 (percent)
- * Normalize to 0..1 safely.
- */
+
 function normalizeToUnit(p: number) {
   if (!Number.isFinite(p)) return 0;
   const unit = p <= 1 ? p : p / 100;
@@ -75,7 +70,7 @@ export default function HomePage() {
       })
     );
 
-    // optional cleanup (only if you previously used these keys)
+    // optional cleanup 
     sessionStorage.removeItem('workflowResult');
     sessionStorage.removeItem('extractedMarkers');
     sessionStorage.removeItem('uploadTime');
@@ -160,7 +155,7 @@ export default function HomePage() {
       console.log('📄 OCR Result:', ocrResult.text);
       console.log('📊 OCR Confidence:', Math.round(ocrResult.confidence * 100) + '%');
 
-      // Orchestrator becomes source of truth
+      // Orchestrator
       setStage('Running multi-agent analysis...');
       setProgress(75);
 

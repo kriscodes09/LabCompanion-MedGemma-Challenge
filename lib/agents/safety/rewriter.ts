@@ -2,8 +2,8 @@ import { detectViolations, getSafetyScore } from './detector';
 import type { SafetyCheckResult } from '../types';
 
 /**
- * LLM-free safety rewriter
- * - Uses deterministic string/regex transforms to remove prescriptive/diagnostic language
+ 
+ * - Uses deterministic string/regex transforms to remove diagnostic language
  * - Re-checks violations after rewrite
  * - Falls back to a safe generic message if still unsafe
  */
@@ -52,10 +52,10 @@ export async function rewriteToSafe(unsafeText: string): Promise<SafetyCheckResu
 }
 
 /**
- * Core rewrite logic: removes "you should/need/must", diagnosis-y certainty,
+ * removes "you should/need/must", diagnosis-y certainty,
  * prescriptive diet language, and treatment recommendations.
  *
- * Keep it educational and population-level.
+ * 
  */
 function applySafetyTransforms(text: string): string {
   let t = text;
@@ -101,12 +101,12 @@ function applySafetyTransforms(text: string): string {
   t = t.replace(/\bprescribed (medication|drug|treatment)\b/gi,
     'Clinicians may prescribe treatments depending on context');
 
-  // 7) Personal assessment → neutral
+  // 7) Personal assessment 
   t = t.replace(/\byour (health|condition|situation) is\b/gi, 'Health situations can vary; this pattern may be discussed as');
   t = t.replace(/\byou're (healthy|unhealthy|sick|fine)\b/gi, 'Health status depends on many factors; lab values are one piece of information');
   t = t.replace(/\bbased on your results, you\b/gi, 'Based on these results, it may be useful to discuss with your clinician whether you');
 
-  // Optional: ensure a gentle safety sentence exists
+  
   if (!/consult your healthcare provider|discuss with your healthcare provider|clinician/i.test(t)) {
     t = `${t.trim()} Discuss these results with your healthcare provider for interpretation in context.`;
   }

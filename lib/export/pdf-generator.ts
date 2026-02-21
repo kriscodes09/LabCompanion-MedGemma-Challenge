@@ -170,7 +170,7 @@ export async function generatePDFReport(markers: ExportMarker[]): Promise<void> 
 
     yPosition += 6;
 
-    // ✅ Range line in details (NEW)
+    // Range line in details 
     const rangeLine = `Reference Range: ${formatRange(marker.referenceRange, marker.unit)}`;
     doc.setFontSize(9);
     doc.setTextColor(90);

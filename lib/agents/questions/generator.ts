@@ -2,8 +2,8 @@ import type { Question, LabMarker } from '../types';
 import { QUESTION_TEMPLATES, QuestionCategory } from './templates';
 
 /**
- * Questions Agent (LLM-free)
- * Generates patient-friendly questions using templates + light heuristics.
+ * Questions Agent
+ * Generates patient-friendly questions.
  */
 export async function generateQuestions(markers: LabMarker[]): Promise<Question[]> {
   const templateQuestions = generateTemplateQuestions(markers);

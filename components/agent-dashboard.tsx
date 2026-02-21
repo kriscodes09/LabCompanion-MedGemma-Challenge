@@ -74,7 +74,7 @@ export default function AgentDashboard({ agentLog, safetyChecks, processingTime,
               Transparent multi-agent run log (what ran, how long it took, and what happened).
             </p>
 
-            {/* ✅ Phase C Step 3: subtle parse-quality warning under header */}
+          
             {showParseBadge && pq && (
               <p className="text-sm mt-2">
                 <span className={`font-semibold ${pq.cls}`}>{pq.label}</span>{' '}
@@ -114,7 +114,7 @@ export default function AgentDashboard({ agentLog, safetyChecks, processingTime,
 
         {open && (
           <div className="mt-5">
-            {/* ✅ Parse quality details (only if badge is showing) */}
+            
             {showParseBadge && pqScore !== null && (
               <Card className="p-4 mb-4 bg-yellow-50 border-yellow-200">
                 <div className="text-sm font-semibold mb-1">Parse Quality</div>

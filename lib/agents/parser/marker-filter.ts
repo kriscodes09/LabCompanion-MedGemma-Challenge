@@ -14,13 +14,7 @@ export type FilterResult = {
 };
 
 /**
- * Light filter:
- * - Drop obvious OCR garbage
- * - Drop unsupported markers (whitelist)
- * - Keep the stuff you actually handle well
- *
- * This is intentionally conservative for hackathon stability.
- */
+ * Light filter: */
 export function filterMarkers(markers: LabMarker[]): FilterResult {
   const dropped: LabMarker[] = [];
   const kept: LabMarker[] = [];
@@ -45,7 +39,7 @@ export function filterMarkers(markers: LabMarker[]): FilterResult {
       continue;
     }
 
-    // 2) Whitelist: only keep markers we support
+    // 2) Whitelist: only keep markers supported
     if (!isSupportedMarker(normalizedName)) {
       dropped.push({ ...m, name: normalizedName });
       droppedUnsupported++;
@@ -107,7 +101,7 @@ function looksLikeGarbageMarkerName(name: string): boolean {
   if (digits / total > 0.6) return true;
 
   // Weird “word salad” that is not a known marker
-  // (we’ll still allow short abbreviations like LDL, HDL, AST, ALT, etc.)
+  // (still allows short abbreviations like LDL, HDL, AST, ALT, etc.)
   const words = s.split(/\s+/).filter(Boolean);
   if (words.length >= 5) return true;
 
@@ -119,7 +113,7 @@ function looksLikeGarbageMarkerName(name: string): boolean {
 }
 
 function looksLikeGarbageValue(value: unknown): boolean {
-  // allow strings (some pipelines keep raw string)
+  // allow strings 
   if (typeof value === 'string') {
     // if it’s a string but basically nonsense, drop
     const t = value.trim();
@@ -138,8 +132,8 @@ function looksLikeGarbageValue(value: unknown): boolean {
   if (typeof value === 'number') {
     if (!Number.isFinite(value)) return true;
 
-    // Drop obviously insane values (hackathon guardrail)
-    // (Keeps normal clinical ranges + common outliers)
+    // Drop obviously insane values 
+    
     if (value > 1_000_000) return true;
     if (value < -1_000_000) return true;
 

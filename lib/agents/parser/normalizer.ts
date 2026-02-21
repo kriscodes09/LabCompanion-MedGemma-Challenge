@@ -7,14 +7,14 @@ const MARKER_NORMALIZATIONS: Record<string, string> = {
   'a1c': 'Hemoglobin A1C',
   'hba1c': 'Hemoglobin A1C',
   'hb a1c': 'Hemoglobin A1C',
-  'hemoglobin a1c': 'Hemoglobin A1C', // ADD THIS
+  'hemoglobin a1c': 'Hemoglobin A1C', 
   'chol': 'Total Cholesterol',
   'cholesterol': 'Total Cholesterol',
-  'total cholesterol': 'Total Cholesterol', // ADD THIS
+  'total cholesterol': 'Total Cholesterol', 
   'ldl': 'LDL Cholesterol',
-  'ldl cholesterol': 'LDL Cholesterol', // ADD THIS
+  'ldl cholesterol': 'LDL Cholesterol', 
   'hdl': 'HDL Cholesterol',
-  'hdl cholesterol': 'HDL Cholesterol', // ADD THIS
+  'hdl cholesterol': 'HDL Cholesterol', 
   'triglycerides': 'Triglycerides',
   'trig': 'Triglycerides',
   'glucose': 'Glucose',
@@ -22,42 +22,42 @@ const MARKER_NORMALIZATIONS: Record<string, string> = {
   'creat': 'Creatinine',
   'creatinine': 'Creatinine',
   'bun': 'Blood Urea Nitrogen',
-  'blood urea nitrogen': 'Blood Urea Nitrogen', // ADD THIS
+  'blood urea nitrogen': 'Blood Urea Nitrogen', 
   'egfr': 'eGFR',
-  'gfr': 'eGFR', // ADD THIS
+  'gfr': 'eGFR', 
   'alt': 'ALT',
   'ast': 'AST',
   'alp': 'Alkaline Phosphatase',
-  'alkaline phosphatase': 'Alkaline Phosphatase', // ADD THIS
+  'alkaline phosphatase': 'Alkaline Phosphatase', 
   'bili': 'Bilirubin',
-  'bilirubin': 'Bilirubin', // ADD THIS
+  'bilirubin': 'Bilirubin', 
   'wbc': 'White Blood Cells',
-  'white blood cells': 'White Blood Cells', // ADD THIS
+  'white blood cells': 'White Blood Cells', 
   'rbc': 'Red Blood Cells',
-  'red blood cells': 'Red Blood Cells', // ADD THIS
+  'red blood cells': 'Red Blood Cells', 
   'plt': 'Platelets',
-  'platelets': 'Platelets', // ADD THIS
+  'platelets': 'Platelets', 
   'hct': 'Hematocrit',
-  'hematocrit': 'Hematocrit', // ADD THIS
+  'hematocrit': 'Hematocrit', 
   'mcv': 'Mean Corpuscular Volume',
-  'mean corpuscular volume': 'Mean Corpuscular Volume', // ADD THIS
-  'mch': 'MCH', // ADD THIS
-  'mchc': 'MCHC', // ADD THIS
-  'rdw': 'RDW', // ADD THIS
+  'mean corpuscular volume': 'Mean Corpuscular Volume', 
+  'mch': 'MCH', 
+  'mchc': 'MCHC', 
+  'rdw': 'RDW', 
   'na': 'Sodium',
-  'sodium': 'Sodium', // ADD THIS
+  'sodium': 'Sodium', 
   'k': 'Potassium',
-  'potassium': 'Potassium', // ADD THIS
+  'potassium': 'Potassium', 
   'cl': 'Chloride',
-  'chloride': 'Chloride', // ADD THIS
+  'chloride': 'Chloride', 
   'ca': 'Calcium',
-  'calcium': 'Calcium', // ADD THIS
+  'calcium': 'Calcium',
   'tsh': 'TSH',
   't4': 'T4',
   'vit d': 'Vitamin D',
-  'vitamin d': 'Vitamin D', // ADD THIS
+  'vitamin d': 'Vitamin D', 
   'b12': 'Vitamin B12',
-  'vitamin b12': 'Vitamin B12', // ADD THIS
+  'vitamin b12': 'Vitamin B12', 
   'folate': 'Folate',
   'iron': 'Iron',
   'ferritin': 'Ferritin',

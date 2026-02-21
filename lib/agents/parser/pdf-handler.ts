@@ -41,7 +41,7 @@ export async function convertPdfToImages(file: File): Promise<File[]> {
       
       const page = await pdf.getPage(pageNum);
       
-      // Set scale for better OCR (2x for better quality)
+      // Set scale for better OCR 
       const viewport = page.getViewport({ scale: 2.0 });
       
       // Create canvas

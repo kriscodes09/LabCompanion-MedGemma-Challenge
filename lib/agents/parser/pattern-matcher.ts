@@ -50,8 +50,7 @@ export function parseLabText(text: string): ParsedMarker[] {
 }
 
 /**
- * Try to parse a single line as a marker
- */
+ * Try to parse a single line as a marker */
 function parseLineAsMarker(line: string): ParsedMarker | null {
   const tokens = line.split(/\s+/).filter((t) => t.length > 0);
   if (tokens.length < 2) return null;
@@ -75,7 +74,7 @@ function parseLineAsMarker(line: string): ParsedMarker | null {
   const nameParts = tokens.slice(0, valueIndex);
   const rawName = nameParts.join(' ').trim();
 
-  // ✅ NEW: reject obviously-non-marker “names”
+  // reject obviously-non-marker “names”
   if (!isValidMarkerName(rawName)) return null;
 
   // Tokens after the value
@@ -114,7 +113,7 @@ function parseLineAsMarker(line: string): ParsedMarker | null {
   unit = unit.replace(/[,;]/g, '').trim();
   if (!unit) unit = 'units';
 
-  // ✅ NEW: reject obvious metadata “units”
+  // reject obvious metadata “units”
   if (!isValidUnit(unit)) return null;
 
   // Reference range
@@ -177,7 +176,7 @@ function parseLineAsMarker(line: string): ParsedMarker | null {
 }
 
 /**
- * ✅ NEW: Validate marker “name” so metadata doesn’t slip through
+ * Validate marker “name” so metadata doesn’t slip through
  */
 function isValidMarkerName(name: string): boolean {
   const n = name.trim();
@@ -192,7 +191,7 @@ function isValidMarkerName(name: string): boolean {
   const digitCount = (n.match(/\d/g) ?? []).length;
   if (digitCount >= 3) return false;
 
-  // Phone-like patterns
+  
   if (n.match(/\(\d{3}\)\s*\d{3}-\d{4}/) || n.match(/\d{3}-\d{3}-\d{4}/)) return false;
 
   // Common metadata keywords
@@ -233,7 +232,7 @@ function isValidMarkerName(name: string): boolean {
 }
 
 /**
- * ✅ NEW: Validate unit so metadata doesn’t slip through as “units”
+ * validate unit so metadata doesn’t slip through as “units”
  */
 function isValidUnit(unit: string): boolean {
   const u = unit.trim().toLowerCase();
@@ -247,8 +246,7 @@ function isValidUnit(unit: string): boolean {
 }
 
 /**
- * Check if a line should be skipped
- */
+ * Checks if a line should be skipped */
 function shouldSkipLine(line: string): boolean {
   const lower = line.toLowerCase();
 

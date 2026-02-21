@@ -112,7 +112,7 @@ function extractSpecificFoods(text: string): string[] {
 function getDefaultFoodPattern(markerName: string, source: 'medgemma_offline' | 'fallback'): FoodPattern {
   return {
     markerName,
-    source, // usually fallback, but could be medgemma_offline with missing foodPatterns
+    source, 
     usda2020Summary:
       'A balanced diet following USDA 2020 Dietary Guidelines emphasizes variety across all food groups.',
     myPlateGroups: [

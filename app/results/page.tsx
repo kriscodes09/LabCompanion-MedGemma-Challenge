@@ -126,7 +126,7 @@ function getNextSteps(lowCount: number, highCount: number): string[] {
 
   return [
     'Focus the visit on the top 2–3 flagged markers',
-    'Ask which results need follow-up vs. watch-and-wait',
+    'Ask which results need follow up vs. watch and wait',
     'Discuss retest timing and possible confounders',
   ];
 }
@@ -322,7 +322,8 @@ export default function ResultsPage() {
             </Button>
           </div>
 
-          {/* 📊 RISK SUMMARY DASHBOARD */}
+          {/* RISK SUMMARY DASHBOARD */}
+
           <Card className="mt-6 p-5 border-blue-200 bg-white/80">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
@@ -380,7 +381,7 @@ export default function ResultsPage() {
             </div>
           </Card>
 
-          {/* ✅ Only show when parse quality is low */}
+          {/* Only show when parse quality is low */}
           {showParseQuality && (
             <Card className="mt-6 p-4 bg-yellow-50 border-yellow-200">
               <div className="flex items-start gap-3">
@@ -405,7 +406,7 @@ export default function ResultsPage() {
             </Card>
           )}
 
-          {/* ✅ WOW FACTOR: agent log + safety summary */}
+         
           {session && (
             <div className="mt-6">
               <AgentDashboard

@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     // Use Context Agent to get MedGemma content
     const medgemmaContent = getMedGemmaContent(markerName);
     
-    // Transform to match your UI expectations
+    
     const context = {
       marker: medgemmaContent.markerName,
       whatIsIt: medgemmaContent.whatIsIt,

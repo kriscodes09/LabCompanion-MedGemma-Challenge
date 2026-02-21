@@ -1,10 +1,12 @@
 # Lab Literacy Companion
 Privacy-First • Local Processing • MedGemma 1.5 4B (Offline)
 
-Developed by Krista Reed (DitDigitalLabs) for the MedGemma Impact Challenge.
+Developed by Krista Reed for the MedGemma Impact Challenge.
 
 Lab Literacy Companion transforms complex lab reports into clear, structured summaries to help patients prepare for doctor visits without sending health data to the cloud.
 
+Live Demo: https://labcompanion.netlify.app  
+Demo Video: https://youtu.be/dL1PVIQrC9o  
 ---
 
 ## The Problem
@@ -57,23 +59,22 @@ Process:
 - The outputs were saved as JSON and embedded directly into the application  
 - At runtime, the app does not call MedGemma or any external API  
 
-Watch the generation process: YOUR_GENERATION_VIDEO_URL  
-Hugging Face model card: YOUR_HUGGINGFACE_URL  
+Watch the generation process: https://youtu.be/t-4qlBxfGig
+Hugging Face model card: https://huggingface.co/datasets/kristar0609/medgemma-lab-literacy-outputs 
 
 ---
 
 ## Architecture
 
-Lab Literacy Companion is organized into six agents:
+Lab Literacy Companion is organized into a multi-agent system coordinated by an orchestrator:
 
-1. Parser Agent – Extracts marker values and reference ranges from OCR text  
-2. Normalizer Agent – Standardizes biomarker names (e.g., "Hgb" → "Hemoglobin")  
-3. Context Agent – Loads MedGemma-generated educational explanations and research context  
-4. Evidence Agent – Adds population-level dietary pattern notes (e.g., USDA 2020 guidance)  
-5. Questions Agent – Generates discussion questions for a doctor visit based on detected markers  
-6. Safety Agent – Applies rules to keep the output educational and non-diagnostic  
+1. Parser Agent – Extracts and normalizes marker values, reference ranges, and biomarker names from OCR text (e.g., "Hgb" → "Hemoglobin")
+2. Context Agent – Loads MedGemma-generated educational explanations and research context
+3. Evidence Agent – Adds population-level dietary pattern notes (e.g., USDA 2020 guidance)
+4. Questions Agent – Generates discussion questions for a doctor visit based on detected markers
+5. Safety Agent – Applies rules to keep the output educational and non-diagnostic
+6. Orchestrator – Coordinates all agents and tracks execution timing
 
-An orchestrator coordinates these steps and assembles the final structured output.
 
 OCR is handled locally using Tesseract.js before the parsing stage begins.
 

@@ -25,7 +25,7 @@ function pushLog(log: AgentLogItem[], item: AgentLogItem) {
 }
 
 /**
- * Parse quality (STRUCTURE reliability, not medical correctness)
+ * Parse quality 
  * Returns 0–100 score + warnings to explain why.
  */
 function computeParseQuality(extractedText: string, markerCount: number): ParseQualitySummary {
@@ -48,19 +48,19 @@ function computeParseQuality(extractedText: string, markerCount: number): ParseQ
   const density = markerCount / Math.max(totalLines, 1);
   if (density < 0.05) {
     score -= 25;
-    warnings.push('Very low marker density — OCR may be noisy or the report format may be unusual.');
+    warnings.push('Very low marker density OCR may be noisy or the report format may be unusual.');
   }
 
   // Low marker count
   if (markerCount < 5) {
     score -= 15;
-    warnings.push('Few markers detected — report may be partial or OCR missed rows.');
+    warnings.push('Few markers detected report may be partial or OCR missed rows.');
   }
 
-  // If OCR text is huge but markers are small → likely noise / headers / junk
+ 
   if (totalLines > 200 && markerCount < 10) {
     score -= 20;
-    warnings.push('Lots of OCR text but few markers — consider cropping to just the results table.');
+    warnings.push('Lots of OCR text but few markers consider cropping to just the results table.');
   }
 
   // Clamp
@@ -89,7 +89,7 @@ export async function processLabText(extractedText: string, ocrConfidence: numbe
       throw new Error('No lab markers found in OCR text');
     }
 
-    // 2) Normalize markers (part of Parser Agent - no separate log entry)
+    // 2) Normalize markers (part of Parser Agent)
     const asLabMarkers: LabMarker[] = extracted.map((m) => ({
       name: m.name,
       value: m.value,

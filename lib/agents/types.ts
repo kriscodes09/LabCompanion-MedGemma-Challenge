@@ -16,7 +16,7 @@ export interface LabMarker {
 }
 export interface ParseQualitySummary {
   score: number;          // 0–100
-  warnings: string[];     // human-readable
+  warnings: string[];     
 }
 
 export interface ParsedLabReport {
@@ -86,7 +86,7 @@ export interface AgentLogItem {
 }
 export type ParseQuality = {
   score: number;      // 0–100
-  warnings: string[]; // human tips when OCR looks sketchy
+  warnings: string[]; 
 };
 
 export interface WorkflowResult {
@@ -97,10 +97,10 @@ export interface WorkflowResult {
   safetyChecks: WorkflowSafetySummary;
   processingTime: number;
 
-  // ✅ NEW (optional, non-breaking)
+  
   warnings?: string[];
 
-  // ✅ NEW (optional, non-breaking)
+  
   agentLog?: AgentLogItem[];
   parseQuality?: ParseQualitySummary;
   

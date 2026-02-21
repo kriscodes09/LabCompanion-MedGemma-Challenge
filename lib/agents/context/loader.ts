@@ -23,22 +23,22 @@ const GLOBAL_DISCLAIMER =
 
 /**
  * Get MedGemma-generated context for a specific marker, with fallback
- * ✅ IMPORTANT: Never throws — returns fallback MarkerContext when missing.
+ * IMPORTANT: Never throws, returns fallback MarkerContext when missing.
  */
 export function getMedGemmaContent(markerName: string): MarkerContext {
-  // Normalize marker name (handles common lab abbreviations and variations)
+  // Normalizes marker name (handles common lab abbreviations and variations)
   const normalizedName = normalizeMarkerName(markerName);
 
   const markers = medgemmaData.markers as MedGemmaMarkers;
 
-  // Try exact match first (fastest)
+  // Try exact match first 
   let content = markers[normalizedName];
 
   // Try variations if exact match fails
   if (!content) {
     const variations = [
       normalizedName,
-      markerName, // Original
+      markerName, 
       normalizedName.replace(/[\(\)]/g, '').trim(), // Without parentheses
       markerName.replace(/[\(\)]/g, '').trim(),
     ];
@@ -50,7 +50,7 @@ export function getMedGemmaContent(markerName: string): MarkerContext {
         break;
       }
 
-      // Try case-insensitive match
+      // Try case insensitive match
       const lowerVariant = variant.toLowerCase();
       const matchingKey = Object.keys(markers).find(
         (key) => key.toLowerCase() === lowerVariant
@@ -62,7 +62,7 @@ export function getMedGemmaContent(markerName: string): MarkerContext {
     }
   }
 
-  // ✅ Non-fatal fallback (no throw)
+  //  Non-fatal fallback 
   if (!content) {
     console.warn(
       `No MedGemma content for: "${markerName}" (normalized: "${normalizedName}")`
@@ -100,7 +100,7 @@ export function getAllMarkers(): string[] {
 }
 
 /**
- * Check if content exists for a given marker (case-insensitive)
+ * Checks if content exists for a given marker 
  */
 export function hasMarkerContent(markerName: string): boolean {
   const normalized = normalizeMarkerName(markerName).toLowerCase();
@@ -123,7 +123,7 @@ function normalizeMarkerName(name: string): string {
     a1c: 'Hemoglobin A1C',
     'hemoglobin a1c': 'Hemoglobin A1C',
 
-    // LDL variants (fixes the "(calc)" cases)
+    // LDL variants 
     ldl: 'LDL Cholesterol',
     'ldl cholesterol': 'LDL Cholesterol',
     'ldl cholesterol (calc)': 'LDL Cholesterol',
@@ -177,8 +177,8 @@ function normalizeMarkerName(name: string): string {
     return normalizations[lower];
   }
 
-  // If not in map, return as-is with proper capitalization
-  // DON'T remove parentheses - they might be needed!
+  // If not in map, return as is with proper capitalization
+  
   return name
     .split(/[\s-]+/)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -187,8 +187,8 @@ function normalizeMarkerName(name: string): string {
 }
 
 /**
- * Get context for a marker, with optional value for future value-specific enhancements
- * ✅ Since getMedGemmaContent() never throws anymore, this will not crash runs.
+ * Get context for a marker, with optional value for future value specific enhancements
+ * Since getMedGemmaContent() never throws anymore.
  */
 export async function generateContextForMarker(
   markerName: string,
@@ -196,7 +196,7 @@ export async function generateContextForMarker(
 ): Promise<MarkerContext> {
   const context = getMedGemmaContent(markerName);
 
-  // Optional: Future value-specific enhancement (e.g., flag if outside typical range)
+  
   if (value !== undefined) {
     // Example placeholder – expand later with reference ranges per marker
     // context.valueNote = `Your measured value: ${value} (reference ranges vary by lab and demographics)`;

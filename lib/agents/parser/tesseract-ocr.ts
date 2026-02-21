@@ -7,7 +7,7 @@ export interface OCRResult {
 
 /**
  * Extract text from an image using Tesseract.js
- * Runs 100% in the browser - no API calls!
+ * 
  */
 export async function extractTextFromImage(
   imageFile: File,

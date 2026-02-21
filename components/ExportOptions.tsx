@@ -37,7 +37,7 @@ function readQuestionsFromSession(): QuestionsByMarker[] | null {
     return null;
   }
 
-  // We only need session.questions — don’t force the entire object shape
+  
   const session = parsed as Partial<WorkflowResult>;
   const questionsUnknown = session.questions as unknown;
 
@@ -65,10 +65,10 @@ export function ExportOptions({ results, onClose }: ExportOptionsProps) {
   );
 
   function handleExport() {
-    // Pull Questions Agent output (single source of truth)
+    // Pull Questions Agent output 
     const sessionQuestions = selectedOptions.questions ? readQuestionsFromSession() : null;
 
-    // If the user asked to include questions, but we don’t have them, don’t “fake it”
+    
     if (selectedOptions.questions && !sessionQuestions) {
       alert(
         'Questions are unavailable because no analysis session was found.\n\nPlease re-run Analyze Lab Report, then export again.'

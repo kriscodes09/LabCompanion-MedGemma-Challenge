@@ -9,6 +9,7 @@ export default function AboutPage() {
 
   return (
     <main className="min-h-screen bg-white">
+
       {/* Header */}
       <div className="border-b bg-gray-50">
         <div className="max-w-4xl mx-auto px-8 py-6">
@@ -23,6 +24,7 @@ export default function AboutPage() {
       </div>
 
       {/* Content */}
+      
       <div className="max-w-4xl mx-auto px-8 py-12 space-y-16">
         
         {/* This Tool Does NOT */}

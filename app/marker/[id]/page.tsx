@@ -24,7 +24,7 @@ type SessionMarker = {
 
 type MarkerContextLike = {
   markerName?: string;
-  marker?: string; // older shape support
+  marker?: string; 
   whatIsIt: string;
   researchContext: string;
   foodPatterns?: string;
@@ -122,7 +122,7 @@ export default function MarkerDetailPage() {
   const handleExportPDF = async () => {
     if (!marker) return;
 
-    // ✅ hard requirement: ExportMarker.value must be a number
+    
     const valueNum = toNumber(marker.value);
     if (valueNum === null) {
       alert('This marker does not have a numeric value, so it cannot be exported to PDF yet.');
@@ -146,7 +146,7 @@ export default function MarkerDetailPage() {
 
       const exportMarker: ExportMarker = {
         name: marker.name,
-        value: valueNum, // ✅ number (not null)
+        value: valueNum, 
         unit: marker.unit ?? '',
         referenceRange: rr,
         status,
@@ -209,6 +209,7 @@ export default function MarkerDetailPage() {
   return (
     <main className="min-h-screen bg-linear-to-b from-blue-50 to-white p-8">
       <div className="max-w-4xl mx-auto">
+        
         {/* Header */}
         <div className="mb-8">
           <Button variant="outline" onClick={() => router.push('/results')} className="mb-4">
