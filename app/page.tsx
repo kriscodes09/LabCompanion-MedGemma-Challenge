@@ -300,10 +300,10 @@ export default function LandingPage() {
             </p>
             <div className="lc-privacy-grid">
               {[
-                { icon: '🔒', t: 'Zero data transmission', p: 'Your report is processed in your browser. Nothing is sent to any server, not even ours.' },
-                { icon: '👤', t: 'No account required', p: 'No email, no sign-up, no tracking. Open the app, upload your results, understand them. Done.' },
-                { icon: '📡', t: 'Works offline', p: 'Once loaded, Lab Companion runs without an internet connection. Full privacy, anywhere.' },
-                { icon: '🏗️', t: 'Structurally defensible', p: 'Cloud-first competitors face a rebuild as regulations tighten. We never will.' },
+                { icon: '', t: 'Zero data transmission', p: 'Your report is processed in your browser. Nothing is sent to any server, not even ours.' },
+                { icon: '', t: 'No account required', p: 'No email, no sign-up, no tracking. Open the app, upload your results, understand them. Done.' },
+                { icon: '', t: 'Works offline', p: 'Once loaded, Lab Companion runs without an internet connection. Full privacy, anywhere.' },
+                { icon: '', t: 'Structurally defensible', p: 'Cloud-first competitors face a rebuild as regulations tighten. We never will.' },
               ].map((item) => (
                 <div key={item.t} className="lc-privacy-item">
                   <div className="lc-privacy-icon">{item.icon}</div>
