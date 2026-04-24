@@ -65,7 +65,7 @@ export default function LandingPage() {
         }
         .lc-hero h1 {
           font-family: 'Instrument Serif', serif;
-          font-size: clamp(4rem, 10vw, 9rem); line-height: 1.0;
+          font-size: clamp(2.4rem, 5vw, 4.5rem); line-height: 1.15;
           color: var(--slate); letter-spacing: -0.03em; margin-bottom: 2rem;
           animation: lcFadeUp 0.7s ease both;
         }
